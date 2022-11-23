@@ -1,16 +1,23 @@
 mod components;
+
+use components::atoms::guest::Guest;
 use components::atoms::nav::Nav;
 
 use yew::prelude::*;
 
+use gloo_console::log;
+
 #[function_component(App)]
 pub fn app() -> Html {
+    log!("Rendering App");
     html! {
         <div>
             <Nav></Nav>
             <br/>
             <div class="columns has-text-centered is-centered">
                 <div class="column is-two-fifths">
+                <Guest></Guest>
+                <br/>
                     <div class="box has-background-dark">
                         <p class="subtitle has-text-primary">
                             {"Lorem ipsum dolor sit amet"}

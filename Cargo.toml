@@ -6,4 +6,8 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+gloo-console = "0.2.3"
+reqwest-wasm = "0.11.15"
+serde_json = "1.0.88"
 yew = "0.19.3"
+yew-hooks = "0.1.56"
