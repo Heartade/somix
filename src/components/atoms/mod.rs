@@ -1,2 +1,2 @@
 pub mod guest;
-pub mod nav;
+pub mod user;

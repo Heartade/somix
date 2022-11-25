@@ -1,4 +1,5 @@
 use yew::prelude::*;
+use crate::components::atoms::user::UserName;
 
 #[function_component(Nav)]
 pub fn nav() -> Html {
@@ -15,6 +16,9 @@ pub fn nav() -> Html {
                         <a class="navbar-item has-text-primary">{"Feed"}</a>
                     </div>
                     <div class="navbar-end">
+                        <div class="navbar-item has-text-primary">
+                            <UserName></UserName>
+                        </div>
                         <div class="navbar-item">
                             <a class="button is-primary has-text-dark">{"Login"}</a>
                         </div>
