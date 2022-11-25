@@ -1,4 +1,5 @@
 mod components;
+mod store;
 
 use components::atoms::guest::Guest;
 use components::atoms::nav::Nav;
