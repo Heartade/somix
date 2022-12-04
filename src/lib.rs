@@ -1,49 +1,16 @@
+mod client;
+
+use crate::client::MatrixSocialClient;
 use gloo_console::log;
 use yew::prelude::*;
 use yew_hooks::prelude::*;
 
-use matrix_sdk::{
-    config::SyncSettings,
-    deserialized_responses::SyncResponse,
-    ruma::{
-        events::{
-            room::message::{MessageType, OriginalSyncRoomMessageEvent, SyncRoomMessageEvent},
-            AnySyncMessageLikeEvent, AnySyncTimelineEvent, SyncMessageLikeEvent,
-        },
-        user_id, RoomId,
-    },
-    Client, LoopCtrl,
-};
-
-struct MatrixSocialClient(Client);
-
-impl MatrixSocialClient {
-    async fn on_room_message(&self, room_id: &RoomId, event: &OriginalSyncRoomMessageEvent) {
-        let MessageType::Text(text_content) = &event.content.msgtype else { return };
-
-        log!(&format!("received event {:?}", &text_content.body).to_string());
-    }
-
-    async fn on_sync_response(&self, response: SyncResponse) -> LoopCtrl {
-        log!("synced");
-
-        for (room_id, room) in response.rooms.join {
-            for event in room.timeline.events {
-                if let Ok(AnySyncTimelineEvent::MessageLike(
-                    AnySyncMessageLikeEvent::RoomMessage(SyncMessageLikeEvent::Original(ev)),
-                )) = event.event.deserialize()
-                {
-                    self.on_room_message(&room_id, &ev).await
-                }
-            }
-        }
-
-        LoopCtrl::Continue
-    }
-}
+use matrix_sdk::{config::SyncSettings, ruma::UserId, Client};
 
 async fn async_func() -> Result<String, String> {
-    let myuser = user_id!("@user:example.org");
+    let username: &'static str = env!("MATRIX_SOCIAL_USER");
+    let password: &'static str = env!("MATRIX_SOCIAL_PASS");
+    let myuser = <&UserId>::try_from(username).unwrap();
     let client = match Client::builder().user_id(myuser).build().await {
         Ok(client) => client,
         Err(e) => {
@@ -51,7 +18,7 @@ async fn async_func() -> Result<String, String> {
         }
     };
 
-    client.login_username(myuser, "password").send().await;
+    client.login_username(myuser, password).send().await;
 
     let ms_client = MatrixSocialClient(client.clone());
 
