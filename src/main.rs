@@ -1,6 +1,6 @@
-use yew::prelude::*;
 use matrix_social::App;
+use yew::prelude::*;
 
 fn main() {
-    yew::start_app::<App>();
+    yew::Renderer::<App>::new().render();
 }

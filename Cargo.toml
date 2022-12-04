@@ -7,9 +7,6 @@ edition = "2021"
 
 [dependencies]
 gloo-console = "0.2.3"
-reqwest-wasm = "0.11.15"
-serde = "1.0.147"
-serde_json = "1.0.88"
-yew = "0.19.3"
-yew-hooks = "0.1.56"
-yewdux = "0.8.3"
+matrix-sdk = { version="0.6.2", features=["js", "rustls-tls"], default-features=false }
+yew = { version="0.20.0", features=["csr"] }
+yew-hooks = "0.2.0"
