@@ -14,11 +14,16 @@ async fn async_func() -> Result<String, String> {
     let client = match Client::builder().user_id(myuser).build().await {
         Ok(client) => client,
         Err(e) => {
-            panic!("Error building client: {e}");
+            panic!("Error during client build: {e}");
         }
     };
 
-    client.login_username(myuser, password).send().await;
+    match client.login_username(myuser, password).send().await {
+        Ok(_) => {}
+        Err(e) => {
+            panic!("Error during client login: {e}");
+        }
+    };
 
     let ms_client = MatrixSocialClient(client.clone());
 

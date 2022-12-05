@@ -1,13 +1,12 @@
 use gloo_console::log;
 use matrix_sdk::{
-    config::SyncSettings,
     deserialized_responses::SyncResponse,
     ruma::{
         events::{
-            room::message::{MessageType, OriginalSyncRoomMessageEvent, SyncRoomMessageEvent},
+            room::message::{MessageType, OriginalSyncRoomMessageEvent},
             AnySyncMessageLikeEvent, AnySyncTimelineEvent, SyncMessageLikeEvent,
         },
-        user_id, RoomId,
+        RoomId,
     },
     Client, LoopCtrl,
 };
