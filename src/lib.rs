@@ -78,7 +78,23 @@ pub fn app() -> Html {
     };
     html! {
         <div>
-            <button {onclick} class={classes!("button")}>{"Click"}</button>
+            <Nav></Nav>
+            <br/>
+            <div class="columns has-text-centered is-centered">
+                <div class="column is-two-fifths">
+                <br/>
+                    <div class="box has-background-dark">
+                        <p class="subtitle has-text-primary">
+                            {"Lorem ipsum dolor sit amet"}
+                        </p>
+                    </div>
+                    <div class="box has-background-dark">
+                        <p class="subtitle has-text-primary">
+                            {"consectetur adipiscing elit"}
+                        </p>
+                    </div>
+                    <div>
+            <button {onclick} class="button is-primary has-text-dark">{"Load Messages"}</button>
             <p class={classes!("has-text-white")}>
             {
                 if let Some(data) = &state.data {
@@ -101,6 +117,41 @@ pub fn app() -> Html {
                 }
             }
             </p>
+        </div>
+                </div>
+                <div class="column is-one-fifth">
+                    <p class="box has-background-dark has-text-primary">{"Lorem ipsum"}</p>
+                </div>
+            </div>
+        </div>
+    }
+}
+
+
+#[function_component(Nav)]
+pub fn nav() -> Html {
+    html! {
+        <div>
+            <nav class="navbar is-fixed-top is-dark">
+                <div class="navbar-brand">
+                    <div class="navbar-item">
+                        <a class="title has-text-primary">{"matrix-social"}</a>
+                    </div>
+                </div>
+                <div class="navbar-menu is-active">
+                    <div class="navbar-start">
+                        <a class="navbar-item has-text-primary">{"Feed"}</a>
+                    </div>
+                    <div class="navbar-end">
+                        <div class="navbar-item has-text-primary">
+                            { "Username Placeholder" }
+                        </div>
+                        <div class="navbar-item">
+                            <a class="button is-primary has-text-dark">{"Login"}</a>
+                        </div>
+                    </div>
+                </div>
+            </nav>
         </div>
     }
 }
