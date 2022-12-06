@@ -5,7 +5,12 @@ use gloo_console::log;
 use yew::prelude::*;
 use yew_hooks::prelude::*;
 
-use matrix_sdk::{config::SyncSettings, ruma::UserId, Client};
+use matrix_sdk::{
+    config::SyncSettings,
+    room::MessagesOptions,
+    ruma::{events::room::message::SyncRoomMessageEvent, UserId},
+    Client,
+};
 
 async fn async_func() -> Result<String, String> {
     let username: &'static str = env!("MATRIX_SOCIAL_USER");
@@ -30,11 +35,34 @@ async fn async_func() -> Result<String, String> {
     let response = client.sync_once(SyncSettings::default()).await.unwrap();
     let settings = SyncSettings::default().token(response.next_batch);
 
-    client
-        .sync_with_callback(settings, |response| ms_client.on_sync_response(response))
-        .await
-        .unwrap();
-    Ok("something".to_owned())
+    //client
+    //    .sync_with_callback(settings, |response| ms_client.on_sync_response(response))
+    //    .await
+    //    .unwrap();
+    client.add_event_handler(|ev: SyncRoomMessageEvent| async move {
+        println!("Received a message {:?}", ev);
+    });
+    client.sync_once(settings).await.unwrap();
+    for room in client.joined_rooms() {
+        let room_name = room.name().unwrap();
+        log!("room:", room_name);
+        let options = MessagesOptions::backward();
+        let messages = room.messages(options).await;
+        match messages {
+            Ok(messages) => {
+                for message in messages.chunk.iter() {
+                    let message = format!("{:#?}", message.event.json());
+                    log!("message:", message);
+                }
+            }
+            Err(e) => {
+                log!("Error during fetching of messages {}", e.to_string());
+            }
+        }
+    }
+    let a = client.joined_rooms().get(0).unwrap().name().unwrap();
+    log!(a);
+    Ok("synced".to_owned())
 }
 
 #[function_component(App)]
@@ -44,6 +72,7 @@ pub fn app() -> Html {
     let onclick = {
         let state = state.clone();
         Callback::from(move |_| {
+            log!("Starting sync...");
             state.run();
         })
     };
