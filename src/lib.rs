@@ -85,7 +85,19 @@ pub fn app() -> Html {
                     html! { data }
                 }
                 else {
-                    html! { "nothing" }
+                    html! { }
+                }
+            }
+            {
+                if state.loading {
+                    html! {
+                        <div>
+                            <p>{"Loading..."}</p>
+                            <progress class="progress is-small is-primary" max="100">{"30%"}</progress>
+                        </div>
+                     }
+                } else {
+                    html! { }
                 }
             }
             </p>
