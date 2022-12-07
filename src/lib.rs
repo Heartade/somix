@@ -2,15 +2,18 @@ mod client;
 
 use crate::client::MatrixSocialClient;
 use gloo_console::log;
+use serde_json::Value;
 use yew::prelude::*;
 use yew_hooks::prelude::*;
 
 use matrix_sdk::{
     config::SyncSettings,
     room::MessagesOptions,
-    ruma::{events::room::message::SyncRoomMessageEvent, UserId},
+    ruma::{events::{room::message::{SyncRoomMessageEvent, self}, MessageLikeEvent, AnyTimelineEvent, AnyMessageLikeEvent}, UserId},
     Client,
 };
+
+use gloo_storage::{LocalStorage, Storage};
 
 async fn async_func() -> Result<String, String> {
     let username: &'static str = env!("MATRIX_SOCIAL_USER");
@@ -34,11 +37,6 @@ async fn async_func() -> Result<String, String> {
 
     let response = client.sync_once(SyncSettings::default()).await.unwrap();
     let settings = SyncSettings::default().token(response.next_batch);
-
-    //client
-    //    .sync_with_callback(settings, |response| ms_client.on_sync_response(response))
-    //    .await
-    //    .unwrap();
     client.add_event_handler(|ev: SyncRoomMessageEvent| async move {
         println!("Received a message {:?}", ev);
     });
@@ -48,26 +46,46 @@ async fn async_func() -> Result<String, String> {
         log!("room:", room_name);
         let options = MessagesOptions::backward();
         let messages = room.messages(options).await;
+        let mut events_: Vec<Value> = vec![];
         match messages {
             Ok(messages) => {
                 for message in messages.chunk.iter() {
-                    let message = format!("{:#?}", message.event.json());
-                    log!("message:", message);
+                    let event = message.event.deserialize().unwrap();
+                    let message = message.event.json().get();
+                    let message: Value = serde_json::from_str(message).unwrap();
+                    log!("message:", &message.to_string());
+                    match event {
+                        AnyTimelineEvent::MessageLike(event) => {
+                            match event {
+                                AnyMessageLikeEvent::RoomMessage(event) => {
+                                    events_.push(message);
+                                    //LocalStorage::set("matrix-social:posts", message).ok();
+                                },
+                                _ => todo!(),
+                            }
+                        },
+                        AnyTimelineEvent::State(_) => {},
+                    }
+                    
                 }
             }
             Err(e) => {
                 log!("Error during fetching of messages {}", e.to_string());
             }
         }
+        LocalStorage::set("matrix-social:posts", events_).ok();
     }
     let a = client.joined_rooms().get(0).unwrap().name().unwrap();
     log!(a);
-    Ok("synced".to_owned())
+    let s: Value = LocalStorage::get("matrix-social:posts").unwrap();
+    let s: String = s.to_string();
+    Ok(s)
 }
 
 #[function_component(App)]
 pub fn app() -> Html {
     log!("Rendering App");
+    let message_history = use_local_storage::<String>("matrix-social:posts".to_string());
     let state = use_async(async move { async_func().await });
     let onclick = {
         let state = state.clone();
@@ -83,22 +101,33 @@ pub fn app() -> Html {
             <div class="columns has-text-centered is-centered">
                 <div class="column is-two-fifths">
                 <br/>
-                    <div class="box has-background-dark">
-                        <p class="subtitle has-text-primary">
-                            {"Lorem ipsum dolor sit amet"}
-                        </p>
-                    </div>
-                    <div class="box has-background-dark">
-                        <p class="subtitle has-text-primary">
-                            {"consectetur adipiscing elit"}
-                        </p>
-                    </div>
                     <div>
             <button {onclick} class="button is-primary has-text-dark">{"Load Messages"}</button>
+            <div /><br />
             <p class={classes!("has-text-white")}>
             {
                 if let Some(data) = &state.data {
-                    html! { data }
+                    let data: Vec<Value> = serde_json::from_str(data).unwrap();
+                    data.into_iter().map(|event| {
+                            html!{
+                                <article class="message">
+                                <div class="message-header is-dark has-text-primary">
+                                <p>{
+                                    html!{
+                                        &event["sender"].to_string()
+                                    }
+                                }</p>
+                                </div>
+                                <div class="message-body has-text-primary has-background-dark">
+                                {
+                                    html!{
+                                        &event["content"]["body"].to_string()
+                                    }
+                                }
+                                </div>
+                                </article>
+                            }
+                        }).collect::<Html>()
                 }
                 else {
                     html! { }
