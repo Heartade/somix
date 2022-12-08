@@ -1,39 +1,74 @@
 use gloo_console::log;
 use matrix_sdk::{
-    deserialized_responses::SyncResponse,
+    config::SyncSettings,
+    room::MessagesOptions,
     ruma::{
-        events::{
-            room::message::{MessageType, OriginalSyncRoomMessageEvent},
-            AnySyncMessageLikeEvent, AnySyncTimelineEvent, SyncMessageLikeEvent,
-        },
-        RoomId,
+        events::{room::message::SyncRoomMessageEvent, AnyMessageLikeEvent, AnyTimelineEvent},
+        UserId,
     },
-    Client, LoopCtrl,
+    Client,
 };
+use serde_json::Value;
 
-pub struct MatrixSocialClient(pub Client);
+use gloo_storage::{LocalStorage, Storage};
 
-impl MatrixSocialClient {
-    pub async fn on_room_message(&self, room_id: &RoomId, event: &OriginalSyncRoomMessageEvent) {
-        let MessageType::Text(text_content) = &event.content.msgtype else { return };
+pub async fn matrix_social_client() -> Result<String, String> {
+    let username: &'static str = env!("MATRIX_SOCIAL_USER");
+    let password: &'static str = env!("MATRIX_SOCIAL_PASS");
+    let myuser = <&UserId>::try_from(username).unwrap();
+    let client = match Client::builder().user_id(myuser).build().await {
+        Ok(client) => client,
+        Err(e) => {
+            panic!("Error during client build: {e}");
+        }
+    };
 
-        log!(&format!("received event {:?}", &text_content.body).to_string());
-    }
+    match client.login_username(myuser, password).send().await {
+        Ok(_) => {}
+        Err(e) => {
+            panic!("Error during client login: {e}");
+        }
+    };
 
-    pub async fn on_sync_response(&self, response: SyncResponse) -> LoopCtrl {
-        log!("synced");
-
-        for (room_id, room) in response.rooms.join {
-            for event in room.timeline.events {
-                if let Ok(AnySyncTimelineEvent::MessageLike(
-                    AnySyncMessageLikeEvent::RoomMessage(SyncMessageLikeEvent::Original(ev)),
-                )) = event.event.deserialize()
-                {
-                    self.on_room_message(&room_id, &ev).await
+    let response = client.sync_once(SyncSettings::default()).await.unwrap();
+    let settings = SyncSettings::default().token(response.next_batch);
+    client.add_event_handler(|ev: SyncRoomMessageEvent| async move {
+        println!("Received a message {:?}", ev);
+    });
+    client.sync_once(settings).await.unwrap();
+    for room in client.joined_rooms() {
+        let room_name = room.name().unwrap();
+        log!("room:", room_name);
+        let options = MessagesOptions::backward();
+        let messages = room.messages(options).await;
+        let mut events_: Vec<Value> = vec![];
+        match messages {
+            Ok(messages) => {
+                for message in messages.chunk.iter() {
+                    let event = message.event.deserialize().unwrap();
+                    let message = message.event.json().get();
+                    let message: Value = serde_json::from_str(message).unwrap();
+                    log!("message:", &message.to_string());
+                    match event {
+                        AnyTimelineEvent::MessageLike(event) => match event {
+                            AnyMessageLikeEvent::RoomMessage(_event) => {
+                                events_.push(message);
+                            }
+                            _ => todo!(),
+                        },
+                        AnyTimelineEvent::State(_) => {}
+                    }
                 }
             }
+            Err(e) => {
+                log!("Error during fetching of messages {}", e.to_string());
+            }
         }
-
-        LoopCtrl::Continue
+        LocalStorage::set("matrix-social:posts", events_).ok();
     }
+    let a = client.joined_rooms().get(0).unwrap().name().unwrap();
+    log!(a);
+    let s: Value = LocalStorage::get("matrix-social:posts").unwrap();
+    let s: String = s.to_string();
+    Ok(s)
 }
