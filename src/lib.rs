@@ -2,13 +2,10 @@ mod client;
 mod components;
 
 use crate::{
-    client::matrix_social_client,
     components::{feed::Feed, nav::Nav},
 };
 use gloo_console::log;
-use serde_json::Value;
 use yew::prelude::*;
-use yew_hooks::prelude::*;
 
 #[function_component(App)]
 pub fn app() -> Html {
