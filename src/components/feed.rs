@@ -15,6 +15,10 @@ pub fn feed() -> Html {
         })
     };
     html! {
+        <div class="columns has-text-centered is-centered">
+                <div class="column is-two-fifths">
+                <br/>
+                    <div>
         <div>
         <button {onclick} class="button is-primary has-text-dark">{"Load Messages"}</button>
             <div /><br />
@@ -61,5 +65,11 @@ pub fn feed() -> Html {
             }
     </p>
     </div>
+    </div>
+                </div>
+                <div class="column is-one-fifth">
+                    <p class="box has-background-dark has-text-primary">{"Lorem ipsum"}</p>
+                </div>
+            </div>
         }
 }

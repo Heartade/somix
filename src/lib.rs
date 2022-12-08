@@ -1,11 +1,35 @@
 mod client;
 mod components;
 
-use crate::{
-    components::{feed::Feed, nav::Nav},
-};
+use crate::components::{feed::Feed, nav::Nav};
 use gloo_console::log;
 use yew::prelude::*;
+use yew_router::prelude::*;
+
+const BASE_URL: &str = "http://0.0.0.0:8080";
+
+#[derive(Clone, Routable, PartialEq)]
+pub enum Route {
+    #[at("/")]
+    Home,
+    #[at("/feed")]
+    Feed,
+    #[not_found]
+    #[at("/404")]
+    NotFound,
+}
+
+pub fn switch(routes: Route) -> Html {
+    match routes {
+        Route::Home => {
+            html! { <p class="title has-text-primary has-text-centered">{"Welcome to matrix-social!"}</p> }
+        }
+        Route::Feed => html! { <Feed /> },
+        Route::NotFound => {
+            html! { <p class="title has-text-primary has-text-centered">{"404 Not Found"}</p> }
+        }
+    }
+}
 
 #[function_component(App)]
 pub fn app() -> Html {
@@ -14,17 +38,9 @@ pub fn app() -> Html {
         <div>
             <Nav></Nav>
             <br/>
-            <div class="columns has-text-centered is-centered">
-                <div class="column is-two-fifths">
-                <br/>
-                    <div>
-            <Feed />
-        </div>
-                </div>
-                <div class="column is-one-fifth">
-                    <p class="box has-background-dark has-text-primary">{"Lorem ipsum"}</p>
-                </div>
-            </div>
+            <BrowserRouter>
+                <Switch<Route> render={switch} />
+            </BrowserRouter>
         </div>
     }
 }
