@@ -1,7 +1,7 @@
 mod client;
 mod components;
 
-use crate::components::{feed::Feed, nav::Nav};
+use crate::components::{feed::Feed, login::Login, nav::Nav};
 use gloo_console::log;
 use yew::prelude::*;
 use yew_router::prelude::*;
@@ -14,6 +14,8 @@ pub enum Route {
     Home,
     #[at("/feed")]
     Feed,
+    #[at("/login")]
+    Login,
     #[not_found]
     #[at("/404")]
     NotFound,
@@ -25,6 +27,7 @@ pub fn switch(routes: Route) -> Html {
             html! { <p class="title has-text-primary has-text-centered">{"Welcome to matrix-social!"}</p> }
         }
         Route::Feed => html! { <Feed /> },
+        Route::Login => html! { <Login /> },
         Route::NotFound => {
             html! { <p class="title has-text-primary has-text-centered">{"404 Not Found"}</p> }
         }

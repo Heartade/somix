@@ -21,7 +21,7 @@ pub fn nav() -> Html {
                             { "Username Placeholder" }
                         </div>
                         <div class="navbar-item">
-                            <a class="button is-primary has-text-dark">{"Login"}</a>
+                            <a class="button is-primary has-text-dark" href={BASE_URL.to_owned()+"/login"}>{"Login"}</a>
                         </div>
                     </div>
                 </div>
