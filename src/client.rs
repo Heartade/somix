@@ -3,8 +3,11 @@ use matrix_sdk::{
     config::SyncSettings,
     room::MessagesOptions,
     ruma::{
+        device_id,
         events::{room::message::SyncRoomMessageEvent, AnyMessageLikeEvent, AnyTimelineEvent},
-        UserId, DeviceId, device_id, OwnedDeviceId, exports::serde::Deserialize, serde::test::serde_json_eq,
+        exports::serde::Deserialize,
+        serde::test::serde_json_eq,
+        DeviceId, OwnedDeviceId, UserId,
     },
     Client, Session,
 };
@@ -29,30 +32,19 @@ pub async fn login(user_id: String, password: String) -> Result<String, String> 
 }
 
 pub async fn get_client() -> Result<Client, Client> {
-    let stored_session: String = LocalStorage::get("matrix-social:session").unwrap();
-    let session: Session = serde_json::from_str(&stored_session).unwrap();
-    let client: Client = Client::builder().user_id(&session.user_id).build().await.unwrap();
+    let stored_session: Value = LocalStorage::get("matrix-social:session").unwrap();
+    let session: Session = serde_json::from_value(stored_session).unwrap();
+    let client: Client = Client::builder()
+        .user_id(&session.user_id)
+        .build()
+        .await
+        .unwrap();
     client.restore_login(session).await.unwrap();
     Ok(client)
 }
 
 pub async fn matrix_social_client() -> Result<String, String> {
-    let username: &'static str = env!("MATRIX_SOCIAL_USER");
-    let password: &'static str = env!("MATRIX_SOCIAL_PASS");
-    let myuser = <&UserId>::try_from(username).unwrap();
-    let client = match Client::builder().user_id(myuser).build().await {
-        Ok(client) => client,
-        Err(e) => {
-            panic!("Error during client build: {e}");
-        }
-    };
-
-    match client.login_username(myuser, password).send().await {
-        Ok(_) => {}
-        Err(e) => {
-            panic!("Error during client login: {e}");
-        }
-    };
+    let client = get_client().await.unwrap();
 
     let response = client.sync_once(SyncSettings::default()).await.unwrap();
     let settings = SyncSettings::default().token(response.next_batch);
