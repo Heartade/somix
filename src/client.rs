@@ -4,9 +4,9 @@ use matrix_sdk::{
     room::MessagesOptions,
     ruma::{
         events::{room::message::SyncRoomMessageEvent, AnyMessageLikeEvent, AnyTimelineEvent},
-        UserId,
+        UserId, DeviceId, device_id, OwnedDeviceId, exports::serde::Deserialize, serde::test::serde_json_eq,
     },
-    Client,
+    Client, Session,
 };
 use serde_json::Value;
 
@@ -22,8 +22,18 @@ pub async fn login(user_id: String, password: String) -> Result<String, String> 
     client.sync_once(SyncSettings::default()).await.unwrap();
     log!("Successfully synced!");
     let access_token = client.access_token().unwrap();
-    LocalStorage::set("matrix-social:access_token", access_token.clone()).unwrap();
+    let device_id = client.device_id().unwrap();
+    let session = client.session().unwrap();
+    LocalStorage::set("matrix-social:session", session).unwrap();
     Ok(access_token)
+}
+
+pub async fn get_client() -> Result<Client, Client> {
+    let stored_session: String = LocalStorage::get("matrix-social:session").unwrap();
+    let session: Session = serde_json::from_str(&stored_session).unwrap();
+    let client: Client = Client::builder().user_id(&session.user_id).build().await.unwrap();
+    client.restore_login(session).await.unwrap();
+    Ok(client)
 }
 
 pub async fn matrix_social_client() -> Result<String, String> {
