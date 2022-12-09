@@ -5,32 +5,41 @@ use yew::prelude::*;
 
 use crate::components::text_input::TextInput;
 
+use crate::client;
+
 #[function_component(Login)]
 pub fn login() -> Html {
     let user_id_state = use_state(|| "".to_owned());
     let password_state = use_state(|| "".to_owned());
 
-    let user_id_onchange =  {
-      let user_id_state = user_id_state.clone();
-      Callback::from( move |value| {
-        user_id_state.set(value);
-      })
+    let user_id_onchange = {
+        let user_id_state = user_id_state.clone();
+        Callback::from(move |value| {
+            user_id_state.set(value);
+        })
     };
-    let password_onchange =  {
-      let password_state = password_state.clone();
-      Callback::from( move |value| {
-        password_state.set(value);
-      })
+    let password_onchange = {
+        let password_state = password_state.clone();
+        Callback::from(move |value| {
+            password_state.set(value);
+        })
     };
 
     let login_onclick = {
-      let user_id_state = user_id_state.clone();
-      let password_state = password_state.clone();
-      Callback::from(move |_| {
-        let user_id = user_id_state.deref().clone();
-        let password = password_state.deref().clone();
-        log!(user_id, password);
-      })
+        let user_id_state = user_id_state.clone();
+        let password_state = password_state.clone();
+        Callback::from(move |_| {
+            let user_id_state = user_id_state.clone();
+            let password_state = password_state.clone();
+            wasm_bindgen_futures::spawn_local(async move {
+                client::login(
+                    user_id_state.deref().to_string(),
+                    password_state.deref().to_string(),
+                )
+                .await
+                .unwrap();
+            });
+        })
     };
 
     html! {
@@ -66,4 +75,4 @@ pub fn login() -> Html {
       </div>
     </div>
     }
-  }
+}

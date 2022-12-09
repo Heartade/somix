@@ -1190,6 +1190,7 @@ dependencies = [
  "matrix-sdk",
  "serde_json",
  "wasm-bindgen",
+ "wasm-bindgen-futures",
  "web-sys",
  "yew",
  "yew-hooks",

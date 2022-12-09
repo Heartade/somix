@@ -12,6 +12,20 @@ use serde_json::Value;
 
 use gloo_storage::{LocalStorage, Storage};
 
+pub async fn login(user_id: String, password: String) -> Result<String, String> {
+    let user: &UserId = &UserId::parse(user_id.clone()).unwrap();
+    let client: Client = Client::builder().user_id(user).build().await.unwrap();
+    log!("Logging in with", &user_id);
+    client.login_username(user, &password).send().await.unwrap();
+    log!("Successfully logged in!");
+    log!("syncing...");
+    client.sync_once(SyncSettings::default()).await.unwrap();
+    log!("Successfully synced!");
+    let access_token = client.access_token().unwrap();
+    LocalStorage::set("matrix-social:access_token", access_token.clone()).unwrap();
+    Ok(access_token)
+}
+
 pub async fn matrix_social_client() -> Result<String, String> {
     let username: &'static str = env!("MATRIX_SOCIAL_USER");
     let password: &'static str = env!("MATRIX_SOCIAL_PASS");
