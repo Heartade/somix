@@ -4,7 +4,7 @@ use matrix_sdk::{
     room::MessagesOptions,
     ruma::{
         device_id,
-        events::{room::message::SyncRoomMessageEvent, AnyMessageLikeEvent, AnyTimelineEvent},
+        events::{room::message::{SyncRoomMessageEvent, TextMessageEventContent, OriginalRoomMessageEvent, RoomMessageEventContent}, AnyMessageLikeEvent, AnyTimelineEvent},
         exports::serde::Deserialize,
         serde::test::serde_json_eq,
         DeviceId, OwnedDeviceId, UserId,
@@ -43,7 +43,7 @@ pub async fn get_client() -> Result<Client, Client> {
     Ok(client)
 }
 
-pub async fn matrix_social_client() -> Result<String, String> {
+pub async fn matrix_social_client() -> Result<Vec<TextMessageEventContent>, Vec<TextMessageEventContent>> {
     let client = get_client().await.unwrap();
 
     let response = client.sync_once(SyncSettings::default()).await.unwrap();
@@ -57,7 +57,7 @@ pub async fn matrix_social_client() -> Result<String, String> {
         log!("room:", room_name);
         let options = MessagesOptions::backward();
         let messages = room.messages(options).await;
-        let mut events_: Vec<Value> = vec![];
+        let mut events_: Vec<RoomMessageEventContent> = vec![];
         match messages {
             Ok(messages) => {
                 for message in messages.chunk.iter() {
@@ -68,7 +68,18 @@ pub async fn matrix_social_client() -> Result<String, String> {
                     match event {
                         AnyTimelineEvent::MessageLike(event) => match event {
                             AnyMessageLikeEvent::RoomMessage(_event) => {
-                                events_.push(message);
+                                match _event {
+                                    matrix_sdk::ruma::events::MessageLikeEvent::Original(_event) => {
+                                        let _event = _event.content;
+                                        match &_event {
+                                            TextMessageEventContent => {
+                                                events_.push(_event);
+                                            }
+                                        }
+                                    },
+                                    matrix_sdk::ruma::events::MessageLikeEvent::Redacted(_) => todo!(),
+                                }
+                                //events_.push(message);
                             }
                             _ => todo!(),
                         },
@@ -84,7 +95,6 @@ pub async fn matrix_social_client() -> Result<String, String> {
     }
     let a = client.joined_rooms().get(0).unwrap().name().unwrap();
     log!(a);
-    let s: Value = LocalStorage::get("matrix-social:posts").unwrap();
-    let s: String = s.to_string();
+    let s: Vec<TextMessageEventContent> = LocalStorage::get("matrix-social:posts").unwrap();
     Ok(s)
 }

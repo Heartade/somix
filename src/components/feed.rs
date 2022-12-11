@@ -25,21 +25,23 @@ pub fn feed() -> Html {
     <p class={classes!("has-text-white")}>
             {
                 if let Some(data) = &state.data {
-                    let data: Vec<Value> = serde_json::from_str(data).unwrap();
+                    //let data: Vec<Value> = serde_json::from_str(data).unwrap();
                     data.into_iter().map(|event| {
+                            //log!(format!("{}", &event["sender"].to_string()));
                             html!{
                                 <article class="message">
                                 <div class="message-header is-dark has-text-primary">
                                 <p>{
                                     html!{
-                                        &event["sender"].to_string()
+                                    //    &event["sender"].to_string()
                                     }
                                 }</p>
                                 </div>
                                 <div class="message-body has-text-primary has-background-dark">
                                 {
                                     html!{
-                                        &event["content"]["body"].to_string()
+                                    //    &event["content"]["body"].to_string()
+                                        &event.body
                                     }
                                 }
                                 </div>
