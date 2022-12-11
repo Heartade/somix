@@ -1,9 +1,39 @@
+use gloo_console::log;
+use gloo_storage::{LocalStorage, Storage};
+use matrix_sdk::Session;
 use yew::prelude::*;
 
 use crate::BASE_URL;
 
 #[function_component(Nav)]
 pub fn nav() -> Html {
+    let logout = Callback::from(move |_| {
+        LocalStorage::delete("matrix-social:session");
+        log!("Logged out");
+    });
+
+    let logged_in: Html = match LocalStorage::get("matrix-social:session") {
+        Ok(session) => {
+            let session: Session = session;
+            html! {
+                <>
+                <div class="navbar-item has-text-primary">{ session.user_id.to_string() }</div>
+                <div class="navbar-item">
+                    <button class="button is-danger has-text-dark" onclick={logout}>{"Logout"}</button>
+                </div>
+                </>
+            }
+        }
+        Err(_) => html! {
+            <>
+            <div class="navbar-item has-text-primary">{ "Not Logged in" }</div>
+            <div class="navbar-item">
+                <a class="button is-primary has-text-dark" href={BASE_URL.to_owned()+"/login"}>{"Login"}</a>
+            </div>
+            </>
+        },
+    };
+
     html! {
         <div>
             <nav class="navbar is-fixed-top is-dark">
@@ -17,12 +47,7 @@ pub fn nav() -> Html {
                         <a class="navbar-item has-text-primary" href={BASE_URL.to_owned()+"/feed"}>{"Feed"}</a>
                     </div>
                     <div class="navbar-end">
-                        <div class="navbar-item has-text-primary">
-                            { "Username Placeholder" }
-                        </div>
-                        <div class="navbar-item">
-                            <a class="button is-primary has-text-dark" href={BASE_URL.to_owned()+"/login"}>{"Login"}</a>
-                        </div>
+                        { logged_in }
                     </div>
                 </div>
             </nav>
