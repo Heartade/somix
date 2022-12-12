@@ -45,6 +45,7 @@ pub fn login() -> Html {
                 )
                 .await
                 .unwrap();
+                client::get_posts().await.unwrap();
                 navigator.push(&Route::Home);
             });
         })
