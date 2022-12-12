@@ -3,17 +3,24 @@ use matrix_sdk::{
     config::SyncSettings,
     room::MessagesOptions,
     ruma::{
-        device_id,
-        events::{room::message::{SyncRoomMessageEvent, TextMessageEventContent, OriginalRoomMessageEvent, RoomMessageEventContent}, AnyMessageLikeEvent, AnyTimelineEvent},
-        exports::serde::Deserialize,
-        serde::test::serde_json_eq,
-        DeviceId, OwnedDeviceId, UserId,
+        events::{room::message::RoomMessageEventContent, AnyMessageLikeEvent, AnyTimelineEvent},
+        UserId,
     },
     Client, Session,
 };
+use serde::{Deserialize, Serialize};
 use serde_json::Value;
 
 use gloo_storage::{LocalStorage, Storage};
+
+use crate::round_robin_vec_merge;
+
+#[derive(Serialize, Deserialize, Clone, Debug)]
+pub struct Post {
+    pub sender: String,
+    pub room: String,
+    pub content: RoomMessageEventContent,
+}
 
 pub async fn login(user_id: String, password: String) -> Result<String, String> {
     let user: &UserId = &UserId::parse(user_id.clone()).unwrap();
@@ -43,58 +50,49 @@ pub async fn get_client() -> Result<Client, Client> {
     Ok(client)
 }
 
-pub async fn matrix_social_client() -> Result<Vec<TextMessageEventContent>, Vec<TextMessageEventContent>> {
+pub async fn get_posts() -> Result<Vec<Post>, Vec<Post>> {
     let client = get_client().await.unwrap();
 
+    log!("Syncing...");
     let response = client.sync_once(SyncSettings::default()).await.unwrap();
-    let settings = SyncSettings::default().token(response.next_batch);
-    client.add_event_handler(|ev: SyncRoomMessageEvent| async move {
-        println!("Received a message {:?}", ev);
-    });
-    client.sync_once(settings).await.unwrap();
+    client
+        .sync_once(SyncSettings::default().token(response.next_batch))
+        .await
+        .unwrap();
+    log!("Synced!");
+
+    log!("Getting posts...");
+    let mut posts: Vec<Vec<Post>> = vec![];
     for room in client.joined_rooms() {
         let room_name = room.name().unwrap();
-        log!("room:", room_name);
-        let options = MessagesOptions::backward();
-        let messages = room.messages(options).await;
-        let mut events_: Vec<RoomMessageEventContent> = vec![];
-        match messages {
-            Ok(messages) => {
-                for message in messages.chunk.iter() {
-                    let event = message.event.deserialize().unwrap();
-                    let message = message.event.json().get();
-                    let message: Value = serde_json::from_str(message).unwrap();
-                    log!("message:", &message.to_string());
-                    match event {
-                        AnyTimelineEvent::MessageLike(event) => match event {
-                            AnyMessageLikeEvent::RoomMessage(_event) => {
-                                match _event {
-                                    matrix_sdk::ruma::events::MessageLikeEvent::Original(_event) => {
-                                        let _event = _event.content;
-                                        match &_event {
-                                            TextMessageEventContent => {
-                                                events_.push(_event);
-                                            }
-                                        }
-                                    },
-                                    matrix_sdk::ruma::events::MessageLikeEvent::Redacted(_) => todo!(),
-                                }
-                                //events_.push(message);
-                            }
-                            _ => todo!(),
-                        },
-                        AnyTimelineEvent::State(_) => {}
-                    }
-                }
-            }
-            Err(e) => {
-                log!("Error during fetching of messages {}", e.to_string());
+        log!(format!("Getting posts from \"{room_name}\"...",));
+        let messages = room.messages(MessagesOptions::backward()).await.unwrap();
+        let mut room_posts: Vec<Post> = vec![];
+        for message in messages.chunk.iter() {
+            let event = message.event.deserialize().unwrap();
+            let sender_name = event.sender().to_string();
+            match event {
+                AnyTimelineEvent::MessageLike(event) => match event {
+                    AnyMessageLikeEvent::RoomMessage(event) => match event {
+                        matrix_sdk::ruma::events::MessageLikeEvent::Original(event) => {
+                            room_posts.push(Post {
+                                sender: sender_name,
+                                room: room_name.clone(),
+                                content: event.content,
+                            });
+                        }
+                        matrix_sdk::ruma::events::MessageLikeEvent::Redacted(_) => {}
+                    },
+                    _ => {}
+                },
+                AnyTimelineEvent::State(_) => {}
             }
         }
-        LocalStorage::set("matrix-social:posts", events_).ok();
+        posts.push(room_posts);
+        log!(format!("Got posts from \"{room_name}\"!"));
     }
-    let a = client.joined_rooms().get(0).unwrap().name().unwrap();
-    log!(a);
-    let s: Vec<TextMessageEventContent> = LocalStorage::get("matrix-social:posts").unwrap();
-    Ok(s)
+    let mixed_posts = round_robin_vec_merge(posts);
+    LocalStorage::set("matrix-social:posts".to_string(), mixed_posts).unwrap();
+    log!("Got posts!");
+    Ok(vec![])
 }

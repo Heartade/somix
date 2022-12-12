@@ -1,6 +1,8 @@
 mod client;
 mod components;
 
+use std::collections::VecDeque;
+
 use crate::components::{feed::Feed, login::Login, nav::Nav};
 use gloo_console::log;
 use yew::prelude::*;
@@ -46,4 +48,21 @@ pub fn app() -> Html {
             </BrowserRouter>
         </div>
     }
+}
+
+fn round_robin_vec_merge<T: Clone>(mut vecs: Vec<Vec<T>>) -> Vec<T> {
+    let mut vecs: VecDeque<_> = vecs.iter_mut().map(|v| v.drain(..)).collect();
+
+    let mut result = Vec::new();
+
+    while let Some(front) = vecs.front_mut() {
+        if let Some(elem) = front.next() {
+            result.push(elem);
+            vecs.rotate_left(1);
+        } else {
+            vecs.pop_front();
+        }
+    }
+
+    result
 }

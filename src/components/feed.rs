@@ -1,77 +1,57 @@
-use crate::client::matrix_social_client;
+use crate::client::{get_posts, Post};
 use gloo_console::log;
-use serde_json::Value;
+use gloo_storage::{LocalStorage, Storage};
 use yew::prelude::*;
-use yew_hooks::prelude::*;
 
 #[function_component(Feed)]
 pub fn feed() -> Html {
-    let state = use_async(async move { matrix_social_client().await });
-    let onclick = {
-        let state = state.clone();
-        Callback::from(move |_| {
-            log!("Starting sync...");
-            state.run();
-        })
+    wasm_bindgen_futures::spawn_local(async move {
+        get_posts().await.unwrap();
+    });
+    let posts: Html = match LocalStorage::get("matrix-social:posts") {
+        Ok(posts) => {
+            let posts: Vec<Post> = posts;
+            html! {
+                <>
+                    {
+                        posts.into_iter().map(|post: Post| {
+                            html! {
+                                <div>
+                                    <article class="message">
+                                        <div class="message-header is-dark has-text-primary">
+                                            {
+                                                html! {
+                                                    <p>{"Sent by "} { post.sender } {" in "} { post.room }</p>
+                                                }
+                                            }
+                                        </div>
+                                        <div class="message-body has-text-primary has-background-dark">
+                                            { post.content.body() }
+                                        </div>
+                                    </article>
+                                    <br />
+                                </div>
+                            }
+                        }).collect::<Html>()
+                    }
+                </>
+            }
+        }
+        Err(e) => html! {
+            <>
+                { e }
+            </>
+        },
     };
     html! {
         <div class="columns has-text-centered is-centered">
-                <div class="column is-two-fifths">
+            <div class="column is-two-fifths">
                 <br/>
-                    <div>
-        <div>
-        <button {onclick} class="button is-primary has-text-dark">{"Load Messages"}</button>
-            <div /><br />
-    <p class={classes!("has-text-white")}>
-            {
-                if let Some(data) = &state.data {
-                    //let data: Vec<Value> = serde_json::from_str(data).unwrap();
-                    data.into_iter().map(|event| {
-                            //log!(format!("{}", &event["sender"].to_string()));
-                            html!{
-                                <article class="message">
-                                <div class="message-header is-dark has-text-primary">
-                                <p>{
-                                    html!{
-                                    //    &event["sender"].to_string()
-                                    }
-                                }</p>
-                                </div>
-                                <div class="message-body has-text-primary has-background-dark">
-                                {
-                                    html!{
-                                    //    &event["content"]["body"].to_string()
-                                        &event.body
-                                    }
-                                }
-                                </div>
-                                </article>
-                            }
-                        }).collect::<Html>()
-                }
-                else {
-                    html! { }
-                }
-            }
-            {
-                if state.loading {
-                    html! {
-                        <div>
-                            <p>{"Loading..."}</p>
-                            <progress class="progress is-small is-primary" max="100">{"30%"}</progress>
-                        </div>
-                     }
-                } else {
-                    html! { }
-                }
-            }
-    </p>
-    </div>
-    </div>
-                </div>
-                <div class="column is-one-fifth">
-                    <p class="box has-background-dark has-text-primary">{"Lorem ipsum"}</p>
-                </div>
+                { posts }
             </div>
-        }
+            <div class="column is-one-fifth">
+                <p class="box has-background-dark has-text-primary">{"Lorem ipsum"}</p>
+            </div>
+        </div>
+    }
 }
