@@ -11,6 +11,7 @@ pub fn nav() -> Html {
     let navigator = use_navigator().unwrap();
     let logout = Callback::from(move |_| {
         LocalStorage::delete("matrix-social:session");
+        LocalStorage::delete("matrix-social:posts");
         log!("Logged out");
         navigator.push(&Route::Login);
     });
