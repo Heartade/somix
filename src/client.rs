@@ -11,7 +11,7 @@ use matrix_sdk::{
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 
-use gloo_storage::{LocalStorage, Storage};
+use gloo_storage::{errors::StorageError, LocalStorage, Storage};
 
 use crate::round_robin_vec_merge;
 
@@ -38,8 +38,8 @@ pub async fn login(user_id: String, password: String) -> Result<String, String> 
     Ok(access_token)
 }
 
-pub async fn get_client() -> Result<Client, Client> {
-    let stored_session: Value = LocalStorage::get("matrix-social:session").unwrap();
+pub async fn get_client() -> Result<Client, StorageError> {
+    let stored_session: Value = LocalStorage::get("matrix-social:session")?;
     let session: Session = serde_json::from_value(stored_session).unwrap();
     let client: Client = Client::builder()
         .user_id(&session.user_id)
@@ -50,8 +50,8 @@ pub async fn get_client() -> Result<Client, Client> {
     Ok(client)
 }
 
-pub async fn get_posts() -> Result<Vec<Post>, Vec<Post>> {
-    let client = get_client().await.unwrap();
+pub async fn get_posts() -> Result<Vec<Post>, StorageError> {
+    let client = get_client().await?;
 
     log!("Syncing...");
     let response = client.sync_once(SyncSettings::default()).await.unwrap();
