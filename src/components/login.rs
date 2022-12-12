@@ -2,15 +2,18 @@ use std::ops::Deref;
 
 use gloo_console::log;
 use yew::prelude::*;
+use yew_router::prelude::use_navigator;
 
 use crate::components::text_input::TextInput;
 
-use crate::client;
+use crate::{client, Route};
 
 #[function_component(Login)]
 pub fn login() -> Html {
+    let navigator = use_navigator().unwrap();
     let user_id_state = use_state(|| "".to_owned());
     let password_state = use_state(|| "".to_owned());
+    let loading_state = use_state(|| false);
 
     let user_id_onchange = {
         let user_id_state = user_id_state.clone();
@@ -28,16 +31,21 @@ pub fn login() -> Html {
     let login_onclick = {
         let user_id_state = user_id_state.clone();
         let password_state = password_state.clone();
+        let loading_state = loading_state.clone();
         Callback::from(move |_| {
             let user_id_state = user_id_state.clone();
             let password_state = password_state.clone();
+            let loading_state = loading_state.clone();
+            let navigator = navigator.clone();
             wasm_bindgen_futures::spawn_local(async move {
+                loading_state.set(true);
                 client::login(
                     user_id_state.deref().to_string(),
                     password_state.deref().to_string(),
                 )
                 .await
                 .unwrap();
+                navigator.push(&Route::Home);
             });
         })
     };
@@ -66,7 +74,14 @@ pub fn login() -> Html {
 
               <div class="field is-grouped">
                 <div class="control">
-                  <button class="button is-primary" onclick={login_onclick}>{"Login"}</button>
+                {
+                  if  *loading_state {
+                    html! {<button class="button is-primary is-loading" >{"Loading"}</button>}
+                  }
+                  else {
+                    html! {<button class="button is-primary" onclick={login_onclick}>{"Login"}</button>}
+                  }
+                }
                 </div>
               </div>
             </div>

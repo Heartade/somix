@@ -2,14 +2,17 @@ use gloo_console::log;
 use gloo_storage::{LocalStorage, Storage};
 use matrix_sdk::Session;
 use yew::prelude::*;
+use yew_router::prelude::use_navigator;
 
-use crate::BASE_URL;
+use crate::{Route, BASE_URL};
 
 #[function_component(Nav)]
 pub fn nav() -> Html {
+    let navigator = use_navigator().unwrap();
     let logout = Callback::from(move |_| {
         LocalStorage::delete("matrix-social:session");
         log!("Logged out");
+        navigator.push(&Route::Login);
     });
 
     let logged_in: Html = match LocalStorage::get("matrix-social:session") {

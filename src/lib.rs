@@ -41,9 +41,9 @@ pub fn app() -> Html {
     log!("Rendering App");
     html! {
         <div>
-            <Nav></Nav>
-            <br/>
             <BrowserRouter>
+                <Nav></Nav>
+                <br/>
                 <Switch<Route> render={switch} />
             </BrowserRouter>
         </div>
