@@ -8,8 +8,6 @@ use gloo_console::log;
 use yew::prelude::*;
 use yew_router::prelude::*;
 
-const BASE_URL: &str = "http://0.0.0.0:8080";
-
 #[derive(Clone, Routable, PartialEq)]
 pub enum Route {
     #[at("/")]
@@ -40,13 +38,11 @@ pub fn switch(routes: Route) -> Html {
 pub fn app() -> Html {
     log!("Rendering App");
     html! {
-        <div>
-            <BrowserRouter>
-                <Nav></Nav>
-                <br/>
-                <Switch<Route> render={switch} />
-            </BrowserRouter>
-        </div>
+        <BrowserRouter>
+            <Nav></Nav>
+            <br/>
+            <Switch<Route> render={switch} />
+        </BrowserRouter>
     }
 }
 
