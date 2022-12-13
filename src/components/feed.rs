@@ -34,12 +34,34 @@ pub fn feed() -> Html {
                                         <div class="message-header is-dark has-text-primary">
                                             {
                                                 html! {
-                                                    <p>{"Sent by "} { post.sender } {" in "} { post.room }</p>
+                                                    <>
+                                                    <p><span class="is-underlined">{ post.room_name }</span><span class="has-text-primary-dark">{" ("} { post.room_id } {")"}</span></p>
+                                                    <p>{"Sent by "} <span class="is-italic">{ post.sender_id }</span></p>
+                                                    </>
                                                 }
                                             }
                                         </div>
-                                        <div class="message-body has-text-primary has-background-dark">
+                                        <div class="message-body has-text-primary has-background-dark has-text-weight-bold is-size-4 is-centered">
                                             { post.content.body() }
+                                            <br /><br />
+                                            <button class="button is-small is-dark has-text-primary is-pulled-left">
+                                                <span class="icon is-small">
+                                                    <ion-icon name="thumbs-up-sharp"></ion-icon>
+                                                </span>
+                                                <span>{"Like(s): "}{"0"}</span>
+                                            </button>
+                                            <button class="button is-small is-dark has-text-primary is-pulled-left">
+                                                <span class="icon is-small">
+                                                    <ion-icon name="thumbs-down-sharp"></ion-icon>
+                                                </span>
+                                                <span>{"Dislike(s): "}{"0"}</span>
+                                            </button>
+                                            <button class="button is-small is-dark has-text-primary is-pulled-right">
+                                                <span class="icon is-small">
+                                                    <ion-icon name="chatbox-ellipses-sharp"></ion-icon>
+                                                </span>
+                                                <span>{"Comment(s): "}{"0"}</span>
+                                             </button>
                                         </div>
                                     </article>
                                     <br />
@@ -65,7 +87,7 @@ pub fn feed() -> Html {
                 { posts }
             </div>
             <div class="column is-one-fifth">
-                <p class="box has-background-dark has-text-primary">{"Lorem ipsum"}</p>
+                <p class="box has-background-dark has-text-primary">{"Placeholder"}</p>
             </div>
         </div>
     }

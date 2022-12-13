@@ -17,8 +17,9 @@ use crate::round_robin_vec_merge;
 
 #[derive(Serialize, Deserialize, Clone, Debug)]
 pub struct Post {
-    pub sender: String,
-    pub room: String,
+    pub sender_id: String,
+    pub room_name: String,
+    pub room_id: String,
     pub content: RoomMessageEventContent,
 }
 
@@ -65,6 +66,7 @@ pub async fn get_posts() -> Result<Vec<Post>, StorageError> {
     let mut posts: Vec<Vec<Post>> = vec![];
     for room in client.joined_rooms() {
         let room_name = room.name().unwrap();
+        let room_id = room.room_id().to_string();
         log!(format!("Getting posts from \"{room_name}\"...",));
         let messages = room.messages(MessagesOptions::backward()).await.unwrap();
         let mut room_posts: Vec<Post> = vec![];
@@ -76,8 +78,9 @@ pub async fn get_posts() -> Result<Vec<Post>, StorageError> {
                     AnyMessageLikeEvent::RoomMessage(event) => match event {
                         matrix_sdk::ruma::events::MessageLikeEvent::Original(event) => {
                             room_posts.push(Post {
-                                sender: sender_name,
-                                room: room_name.clone(),
+                                sender_id: sender_name,
+                                room_name: room_name.clone(),
+                                room_id: room_id.clone(),
                                 content: event.content,
                             });
                         }
