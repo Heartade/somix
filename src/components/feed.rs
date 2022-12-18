@@ -6,7 +6,7 @@ use gloo_console::log;
 use gloo_storage::errors::StorageError::*;
 use gloo_storage::{LocalStorage, Storage};
 use yew::prelude::*;
-use yew_router::prelude::use_navigator;
+use yew_router::prelude::*;
 
 #[function_component(Feed)]
 pub fn feed() -> Html {
@@ -47,7 +47,7 @@ pub fn feed() -> Html {
                                                     }
                                                 </div>
                                                 <div class="message-body has-text-primary has-background-dark has-text-weight-bold is-size-4 is-centered">
-                                                    { post.content.body() }
+                                                    <Link<Route> to={Route::Event { event_id: post.event_id }}>{ post.content.body() }</Link<Route>>
                                                     <br /><br />
                                                     <button class="button is-small is-dark has-text-primary is-pulled-left">
                                                         <span class="icon is-small">
