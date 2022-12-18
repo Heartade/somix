@@ -73,11 +73,11 @@ pub fn feed() -> Html {
             }
         }
         Err(e) => html! {
-            <>
-                {
-                    e.to_string()
-                }
-            </>
+            <p class="has-text-danger">
+                {"Error: "}{e.to_string()}
+                <br />
+                {"You may need to logout/login or clear your Browser LocalStorage."}
+            </p>
         },
     };
     html! {
