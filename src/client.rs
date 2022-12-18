@@ -3,7 +3,10 @@ use matrix_sdk::{
     config::SyncSettings,
     room::MessagesOptions,
     ruma::{
-        events::{room::message::RoomMessageEventContent, AnyMessageLikeEvent, AnyTimelineEvent},
+        events::{
+            room::message::{Relation, RoomMessageEventContent},
+            AnyMessageLikeEvent, AnyTimelineEvent,
+        },
         UserId,
     },
     Client, Session,
@@ -22,7 +25,7 @@ pub struct Post {
     pub room_id: String,
     pub content: RoomMessageEventContent,
     pub event_id: String,
-    pub reply_to: Option<String>
+    pub reply_to: Option<String>,
 }
 
 pub async fn login(user_id: String, password: String) -> Result<String, String> {
@@ -79,13 +82,22 @@ pub async fn get_posts() -> Result<Vec<Post>, StorageError> {
                 AnyTimelineEvent::MessageLike(event) => match event {
                     AnyMessageLikeEvent::RoomMessage(event) => match event {
                         matrix_sdk::ruma::events::MessageLikeEvent::Original(event) => {
+                            let reply_to: Option<String> = match event.clone().content.relates_to {
+                                Some(relation) => match relation {
+                                    Relation::Reply { in_reply_to } => {
+                                        Some(in_reply_to.event_id.to_string())
+                                    }
+                                    _ => None,
+                                },
+                                None => None,
+                            };
                             room_posts.push(Post {
                                 sender_id: sender_name,
                                 room_name: room_name.clone(),
                                 room_id: room_id.clone(),
                                 content: event.content,
                                 event_id: event.event_id.to_string(),
-                                reply_to: None
+                                reply_to: reply_to,
                             });
                         }
                         matrix_sdk::ruma::events::MessageLikeEvent::Redacted(_) => {}

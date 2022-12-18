@@ -29,43 +29,50 @@ pub fn feed() -> Html {
                     {
                         posts.into_iter().map(|post: Post| {
                             html! {
-                                <div>
-                                    <article class="message">
-                                        <div class="message-header is-dark has-text-primary">
-                                            {
-                                                html! {
-                                                    <>
-                                                    <p><span class="is-underlined">{ post.room_name }</span><span class="has-text-primary-dark">{" ("} { post.room_id } {")"}</span></p>
-                                                    <p>{"Sent by "} <span class="is-italic">{ post.sender_id }</span></p>
-                                                    </>
-                                                }
-                                            }
+                                match post.reply_to {
+                                    Some(reply_to) => {
+                                        html! {}
+                                    },
+                                    None => html! {
+                                        <div>
+                                            <article class="message">
+                                                <div class="message-header is-dark has-text-primary">
+                                                    {
+                                                        html! {
+                                                            <>
+                                                            <p><span class="is-underlined">{ post.room_name }</span><span class="has-text-primary-dark">{" ("} { post.room_id } {")"}</span></p>
+                                                            <p>{"Sent by "} <span class="is-italic">{ post.sender_id }</span></p>
+                                                            </>
+                                                        }
+                                                    }
+                                                </div>
+                                                <div class="message-body has-text-primary has-background-dark has-text-weight-bold is-size-4 is-centered">
+                                                    { post.content.body() }
+                                                    <br /><br />
+                                                    <button class="button is-small is-dark has-text-primary is-pulled-left">
+                                                        <span class="icon is-small">
+                                                            <ion-icon name="thumbs-up-sharp"></ion-icon>
+                                                        </span>
+                                                        <span>{"Like(s): "}{"0"}</span>
+                                                    </button>
+                                                    <button class="button is-small is-dark has-text-primary is-pulled-left">
+                                                        <span class="icon is-small">
+                                                            <ion-icon name="thumbs-down-sharp"></ion-icon>
+                                                        </span>
+                                                        <span>{"Dislike(s): "}{"0"}</span>
+                                                    </button>
+                                                    <button class="button is-small is-dark has-text-primary is-pulled-right">
+                                                        <span class="icon is-small">
+                                                            <ion-icon name="chatbox-ellipses-sharp"></ion-icon>
+                                                        </span>
+                                                        <span>{"Comment(s): "}{"0"}</span>
+                                                     </button>
+                                                </div>
+                                            </article>
+                                            <br />
                                         </div>
-                                        <div class="message-body has-text-primary has-background-dark has-text-weight-bold is-size-4 is-centered">
-                                            { post.content.body() }
-                                            <br /><br />
-                                            <button class="button is-small is-dark has-text-primary is-pulled-left">
-                                                <span class="icon is-small">
-                                                    <ion-icon name="thumbs-up-sharp"></ion-icon>
-                                                </span>
-                                                <span>{"Like(s): "}{"0"}</span>
-                                            </button>
-                                            <button class="button is-small is-dark has-text-primary is-pulled-left">
-                                                <span class="icon is-small">
-                                                    <ion-icon name="thumbs-down-sharp"></ion-icon>
-                                                </span>
-                                                <span>{"Dislike(s): "}{"0"}</span>
-                                            </button>
-                                            <button class="button is-small is-dark has-text-primary is-pulled-right">
-                                                <span class="icon is-small">
-                                                    <ion-icon name="chatbox-ellipses-sharp"></ion-icon>
-                                                </span>
-                                                <span>{"Comment(s): "}{"0"}</span>
-                                             </button>
-                                        </div>
-                                    </article>
-                                    <br />
-                                </div>
+                                    }
+                                }
                             }
                         }).collect::<Html>()
                     }
