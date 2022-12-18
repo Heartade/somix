@@ -21,6 +21,8 @@ pub struct Post {
     pub room_name: String,
     pub room_id: String,
     pub content: RoomMessageEventContent,
+    pub event_id: String,
+    pub reply_to: Option<String>
 }
 
 pub async fn login(user_id: String, password: String) -> Result<String, String> {
@@ -82,6 +84,8 @@ pub async fn get_posts() -> Result<Vec<Post>, StorageError> {
                                 room_name: room_name.clone(),
                                 room_id: room_id.clone(),
                                 content: event.content,
+                                event_id: event.event_id.to_string(),
+                                reply_to: None
                             });
                         }
                         matrix_sdk::ruma::events::MessageLikeEvent::Redacted(_) => {}
