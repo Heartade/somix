@@ -1,0 +1,8 @@
+
+[build]
+release = true
+
+[[hooks]]
+stage = "pre_build"
+command = "npx"
+command_arguments = ["tailwindcss", "--minify", "-i", "./src/tailwind.css", "-o", "./target/tailwindcss/styles.css"]
