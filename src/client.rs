@@ -4,13 +4,14 @@ use matrix_sdk::{
     room::MessagesOptions,
     ruma::{
         events::{
-            room::message::{Relation, RoomMessageEventContent},
+            room::message::{sanitize::HtmlSanitizerMode, Relation, RoomMessageEventContent},
             AnyMessageLikeEvent, AnyTimelineEvent,
         },
         UserId,
     },
     Client, Session,
 };
+use ruma::events::room::message::sanitize::RemoveReplyFallback;
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 
@@ -23,7 +24,7 @@ pub struct Post {
     pub sender_id: String,
     pub room_name: String,
     pub room_id: String,
-    pub content: RoomMessageEventContent,
+    pub content: String,
     pub event_id: String,
     pub reply_to: Option<String>,
 }
@@ -82,20 +83,29 @@ pub async fn get_posts() -> Result<Vec<Post>, StorageError> {
                 AnyTimelineEvent::MessageLike(event) => match event {
                     AnyMessageLikeEvent::RoomMessage(event) => match event {
                         matrix_sdk::ruma::events::MessageLikeEvent::Original(event) => {
-                            let reply_to: Option<String> = match event.clone().content.relates_to {
+                            let content = event.content.body().to_string();
+                            let (reply_to, content) = match event.clone().content.relates_to {
                                 Some(relation) => match relation {
                                     Relation::Reply { in_reply_to } => {
-                                        Some(in_reply_to.event_id.to_string())
+                                        let mut event = event.clone();
+                                        event.content.sanitize(
+                                            HtmlSanitizerMode::Strict,
+                                            RemoveReplyFallback::Yes,
+                                        );
+                                        (
+                                            Some(in_reply_to.event_id.to_string()),
+                                            event.content.body().to_string(),
+                                        )
                                     }
-                                    _ => None,
+                                    _ => (None, content),
                                 },
-                                None => None,
+                                None => (None, content),
                             };
                             room_posts.push(Post {
                                 sender_id: sender_name,
                                 room_name: room_name.clone(),
                                 room_id: room_id.clone(),
-                                content: event.content,
+                                content: content,
                                 event_id: event.event_id.to_string(),
                                 reply_to: reply_to,
                             });

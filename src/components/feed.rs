@@ -47,7 +47,7 @@ pub fn feed() -> Html {
                                                     }
                                                 </div>
                                                 <div class="message-body has-text-primary has-background-dark has-text-weight-bold is-size-4 is-centered">
-                                                    <Link<Route> to={Route::Event { event_id: post.event_id }}>{ post.content.body() }</Link<Route>>
+                                                    <Link<Route> to={Route::Event { event_id: post.event_id }}>{ post.content }</Link<Route>>
                                                     <br /><br />
                                                     <button class="button is-small is-dark has-text-primary is-pulled-left">
                                                         <span class="icon is-small">
