@@ -1,6 +1,6 @@
 # matrix-social
 
-An experimental Matrix "Social Media" client.
+An experimental Matrix "Social Media" client. A deployment of the master branch can be found at https://imbev.codeberg.page/matrix-social/ .
 
 ## Requirements
 
