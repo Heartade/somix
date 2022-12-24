@@ -8,7 +8,7 @@ pipeline:
   build:
     image: ./Dockerfile
     volumes:
-      - /dist:/app/dist
+      - dist:/app/dist
     when:
       event: [ push ]
 
@@ -22,7 +22,7 @@ pipeline:
       - git config --global user.name "Woodpecker CI"
       - git clone -b pages https://$CODEBERG_TOKEN@codeberg.org/$CI_REPO.git $CI_REPO_NAME
       # Copy build step output to repository folder
-      - cp -ar /dist/ $CI_REPO_NAME/
+      - cp -ar dist/ $CI_REPO_NAME/
       # Needed for custom domains
       - cp .domains $CI_REPO_NAME || true # Ignore if it doesn't exist
       # Commit and push all static files with pipeline started timestamp
