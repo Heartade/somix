@@ -6,9 +6,9 @@ clone:
 
 pipeline:
   build:
-    image: rust:bullseye
+    image: node:18-bullseye-slim
     commands:
-      - apt-get update -y && apt-get install npm -y
+      - curl https://sh.rustup.rs -sSf | sh -s -- --profile minimal -y
       - ./build.sh
     when:
       event: [ push ]
