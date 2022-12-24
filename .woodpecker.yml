@@ -10,7 +10,7 @@ pipeline:
     commands:
       - curl https://sh.rustup.rs -sSf | sh -s -- --profile minimal -y
       - . "$HOME/.cargo/env"
-      - ./build.sh --public-url https://imbev.codeberg.page/matrix-social
+      - ./build.sh --public-url matrix-social/
     when:
       event: [ push ]
 
