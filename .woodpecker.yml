@@ -7,8 +7,6 @@ clone:
 pipeline:
   build:
     image: ./Dockerfile
-    volumes:
-      - dist:/app/dist
     when:
       event: [ push ]
 
