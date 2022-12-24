@@ -9,7 +9,7 @@ pipeline:
     image: node:18-bullseye
     commands:
       - curl https://sh.rustup.rs -sSf | sh -s -- --profile minimal -y
-      - source "$HOME/.cargo/env"
+      - . "$HOME/.cargo/env"
       - ./build.sh
     when:
       event: [ push ]
