@@ -97,7 +97,7 @@ pub fn nav() -> Html {
                     }
                 }
             </div>
-            <script type="text/javascript" src="/assets/mobile-menu.js"/>
+            <script type="text/javascript" src="assets/mobile-menu.js"/>
         </nav>
     }
 }
