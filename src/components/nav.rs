@@ -32,7 +32,7 @@ pub fn nav() -> Html {
                     <div class="flex space-x-4">
                         <div>
                             <Link<Route> to={Route::Home} classes={classes!(String::from("flex items-center py-4 px-2 text-charm-400 hover:text-charm-300"))}>
-                                <img src="/assets/logo_128x128.webp" class="h-7 w-7 mr-1"/>
+                                <img src="assets/logo_128x128.webp" class="h-7 w-7 mr-1"/>
                                 <span class="font-bold">{"matrix-social"}</span>
                             </Link<Route>>
                         </div>
