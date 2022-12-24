@@ -6,7 +6,10 @@ clone:
 
 pipeline:
   build:
-    image: ./Dockerfile
+    image: rust:bullseye
+    commands:
+      - apt-get update -y && apt-get install npm -y
+      - ./build.sh
     when:
       event: [ push ]
 
