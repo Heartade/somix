@@ -26,13 +26,13 @@ pub enum Route {
 pub fn switch(routes: Route) -> Html {
     match routes {
         Route::Home => {
-            html! { <p class="title has-text-primary has-text-centered">{"Welcome to matrix-social!"}</p> }
+            html! { <p class="text-4xl text-center text-bold text-charm-400">{"Welcome to matrix-social!"}</p> }
         }
         Route::Feed => html! { <Feed /> },
         Route::Login => html! { <Login /> },
         Route::Event { event_id } => html! { <Event event_id={ event_id } /> },
         Route::NotFound => {
-            html! { <p class="title has-text-primary has-text-centered">{"404 Not Found"}</p> }
+            html! { <p class="text-4xl text-center text-bold text-charm-400">{"404 Not Found"}</p> }
         }
     }
 }
