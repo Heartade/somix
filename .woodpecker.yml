@@ -23,8 +23,8 @@ pipeline:
       - git config --global user.email "noreply@example.org"
       - git config --global user.name "Woodpecker CI"
       - git clone -b pages https://$CODEBERG_TOKEN@codeberg.org/$CI_REPO.git $CI_REPO_NAME
-      # Create symlink for 404 pages
-      - ln --symbolic --relative dist/index.html dist/404.html
+      # Create a copy of the index for 404 pages
+      - cp dist/index.html dist/404.html
       # Copy build step output to repository folder
       - cp -ar dist/. $CI_REPO_NAME/
       # Needed for custom domains
