@@ -27,6 +27,17 @@ pub struct Post {
     pub content: String,
     pub event_id: String,
     pub reply_to: Option<String>,
+    pub score: i32,
+}
+
+impl Post {
+    fn increment_score(&mut self) {
+        self.score = self.score + 1;
+    }
+
+    fn decrement_score(&mut self) {
+        self.score = self.score - 1;
+    }
 }
 
 pub async fn login(user_id: String, password: String) -> Result<String, String> {
@@ -76,7 +87,7 @@ pub async fn get_posts() -> Result<Vec<Post>, StorageError> {
         log!(format!("Getting posts from \"{room_name}\"...",));
         let messages = room.messages(MessagesOptions::backward()).await.unwrap();
         let mut room_posts: Vec<Post> = vec![];
-        for message in messages.chunk.iter() {
+        for message in messages.chunk.iter().rev() {
             let event = message.event.deserialize().unwrap();
             let sender_name = event.sender().to_string();
             match event {
@@ -108,15 +119,32 @@ pub async fn get_posts() -> Result<Vec<Post>, StorageError> {
                                 content: content,
                                 event_id: event.event_id.to_string(),
                                 reply_to: reply_to,
+                                score: 0,
                             });
                         }
                         matrix_sdk::ruma::events::MessageLikeEvent::Redacted(_) => {}
+                    },
+                    AnyMessageLikeEvent::Reaction(event) => match event {
+                        ruma::events::MessageLikeEvent::Original(event) => {
+                            let reaction = event.content.relates_to.key;
+                            for post in &mut room_posts {
+                                if post.event_id == event.content.relates_to.event_id {
+                                    if reaction == "👍️".to_string() {
+                                        post.increment_score();
+                                    } else if reaction == "👎️".to_string() {
+                                        post.decrement_score();
+                                    }
+                                }
+                            }
+                        }
+                        ruma::events::MessageLikeEvent::Redacted(_) => {}
                     },
                     _ => {}
                 },
                 AnyTimelineEvent::State(_) => {}
             }
         }
+        room_posts.reverse();
         posts.push(room_posts);
         log!(format!("Got posts from \"{room_name}\"!"));
     }
