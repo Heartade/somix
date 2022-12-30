@@ -25,6 +25,11 @@ pipeline:
       - git clone -b pages https://$CODEBERG_TOKEN@codeberg.org/$CI_REPO.git $CI_REPO_NAME
       # Create a copy of the index for 404 pages
       - cp dist/index.html dist/404.html
+      - mv $CI_REPO_NAME/.git ./.git.temp
+      - rm -rdf $CI_REPO_NAME
+      - mkdir $CI_REPO_NAME
+      - mv ./.git.temp $CI_REPO_NAME
+      - mv $CI_REPO_NAME/.git.temp $CI_REPO_NAME/.git
       # Copy build step output to repository folder
       - cp -ar dist/. $CI_REPO_NAME/
       # Needed for custom domains
