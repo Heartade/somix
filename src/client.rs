@@ -19,7 +19,7 @@ use gloo_storage::{errors::StorageError, LocalStorage, Storage};
 
 use crate::round_robin_vec_merge;
 
-#[derive(Serialize, Deserialize, Clone, Debug)]
+#[derive(Serialize, Deserialize, Clone, Debug, PartialEq)]
 pub struct Post {
     pub sender_id: String,
     pub room_name: String,
