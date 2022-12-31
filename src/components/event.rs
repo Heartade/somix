@@ -2,6 +2,7 @@ use gloo_storage::{LocalStorage, Storage};
 use yew::prelude::*;
 
 use crate::client::Post;
+use crate::components::post::PostComp;
 
 #[derive(Properties, PartialEq, Clone)]
 pub struct Props {
@@ -78,43 +79,7 @@ pub fn event(props: &Props) -> Html {
 
     let content = match post {
         Some(post) => html! {
-            <div>
-                <article class="message">
-                    <div class="message-header is-dark has-text-primary">
-                        {
-                            html! {
-                                <>
-                                <p><span class="is-underlined">{ post.room_name }</span><span class="has-text-primary-dark">{" ("} { post.room_id } {")"}</span></p>
-                                <p>{"Sent by "} <span class="is-italic">{ post.sender_id }</span></p>
-                                </>
-                            }
-                        }
-                    </div>
-                    <div class="message-body has-text-primary has-background-dark has-text-weight-bold is-size-4 is-centered">
-                        { post.content }
-                        <br /><br />
-                        <button class="button is-small is-dark has-text-primary is-pulled-left">
-                            <span class="icon is-small">
-                                <ion-icon name="thumbs-up-sharp"></ion-icon>
-                            </span>
-                            <span>{"Like(s): "}{"0"}</span>
-                        </button>
-                        <button class="button is-small is-dark has-text-primary is-pulled-left">
-                            <span class="icon is-small">
-                                <ion-icon name="thumbs-down-sharp"></ion-icon>
-                            </span>
-                            <span>{"Dislike(s): "}{"0"}</span>
-                        </button>
-                        <button class="button is-small is-dark has-text-primary is-pulled-right">
-                            <span class="icon is-small">
-                                <ion-icon name="chatbox-ellipses-sharp"></ion-icon>
-                            </span>
-                            <span>{"Comment(s): "}{"0"}</span>
-                         </button>
-                    </div>
-                </article>
-                <br />
-            </div>
+            <PostComp post={post} />
         },
         None => html! { format!{"Post \"{event_id}\" not found."} },
     };
