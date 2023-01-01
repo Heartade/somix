@@ -1796,9 +1796,28 @@ dependencies = [
  "assign",
  "js_int",
  "js_option",
+ "ruma-client",
  "ruma-client-api",
  "ruma-common",
  "ruma-federation-api",
+]
+
+[[package]]
+name = "ruma-client"
+version = "0.10.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "4ea98d70ccfa3ec8fae504312524d044de982215c293758f502a315bd927b063"
+dependencies = [
+ "assign",
+ "async-stream",
+ "async-trait",
+ "bytes",
+ "futures-core",
+ "http",
+ "ruma-common",
+ "serde",
+ "serde_json",
+ "tracing",
 ]
 
 [[package]]

@@ -11,7 +11,13 @@ use matrix_sdk::{
     },
     Client, Session,
 };
-use ruma::events::room::message::sanitize::RemoveReplyFallback;
+use ruma::{
+    api::client::{
+        filter::{EventFormat, FilterDefinition, LazyLoadOptions, RoomEventFilter, RoomFilter},
+        sync::sync_events::v3::Filter,
+    },
+    events::room::message::sanitize::RemoveReplyFallback,
+};
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 
@@ -47,7 +53,19 @@ pub async fn login(user_id: String, password: String) -> Result<String, String> 
     client.login_username(user, &password).send().await.unwrap();
     log!("Successfully logged in!");
     log!("syncing...");
-    client.sync_once(SyncSettings::default()).await.unwrap();
+
+    let mut sync_settings_filter_definition = FilterDefinition::empty();
+    sync_settings_filter_definition.room = RoomFilter::empty();
+    sync_settings_filter_definition.room.timeline = RoomEventFilter::empty();
+    sync_settings_filter_definition
+        .room
+        .timeline
+        .lazy_load_options = LazyLoadOptions::Enabled {
+        include_redundant_members: false,
+    };
+    let sync_settings = SyncSettings::new().filter(Filter::from(sync_settings_filter_definition));
+
+    client.sync_once(sync_settings).await.unwrap();
     log!("Successfully synced!");
     let access_token = client.access_token().unwrap();
     let device_id = client.device_id().unwrap();
