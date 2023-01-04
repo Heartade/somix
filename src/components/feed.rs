@@ -54,11 +54,11 @@ pub fn feed() -> Html {
         },
     };
     html! {
-        <div class="flex flex-wrap-reverse sm:flex-nowrap justify-center gap-4">
-            <div class="w-max md:w-2/3 lg:w-1/2 xl:w-2/5 2xl:w-1/3">
+        <div class="flex flex-wrap-reverse sm:flex-nowrap justify-center">
+            <div class="w-max md:w-2/3 lg:w-1/2 xl:w-2/5 2xl:w-1/3 mx-4">
                 { posts }
             </div>
-            <div class="flex justify-center w-80 h-96 gap-4 py-4 px-8 border border-tuatara-400 rounded bg-tuatara-700">
+            <div class="flex justify-center w-80 h-96 gap-4 py-4 px-8 mb-4 border border-tuatara-400 rounded bg-tuatara-700">
                 <span class="sticky text-center text-charm-400">{"Placeholder"}</span>
             </div>
         </div>
