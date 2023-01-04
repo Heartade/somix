@@ -12,7 +12,7 @@ pub struct Props {
 pub fn post(props: &Props) -> Html {
     let post = props.post.clone();
     html! {
-        <div class="flex w-full my-4 border border-tuatara-400 rounded bg-tuatara-600">
+        <div class="flex w-full mb-4 border border-tuatara-400 rounded bg-tuatara-600">
             <div class="flex flex-col bg-tuatara-700 p-2 rounded"> //left
                 <button class="group hover:bg-tuatara-500 rounded p-1">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"

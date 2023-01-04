@@ -54,12 +54,12 @@ pub fn feed() -> Html {
         },
     };
     html! {
-        <div class="columns has-text-centered is-centered">
-            <div class="column is-two-fifths">
+        <div class="flex flex-wrap-reverse sm:flex-nowrap justify-center gap-4">
+            <div class="w-max md:w-2/3 lg:w-1/2 xl:w-2/5 2xl:w-1/3">
                 { posts }
             </div>
-            <div class="column is-one-fifth">
-                <p class="box has-background-dark has-text-primary">{"Placeholder"}</p>
+            <div class="flex justify-center w-80 h-96 gap-4 py-4 px-8 border border-tuatara-400 rounded bg-tuatara-700">
+                <span class="sticky text-center text-charm-400">{"Placeholder"}</span>
             </div>
         </div>
     }
