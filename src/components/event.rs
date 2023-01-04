@@ -1,5 +1,6 @@
 use gloo_storage::{LocalStorage, Storage};
 use yew::prelude::*;
+use yew_router::prelude::*;
 
 use crate::client::Post;
 use crate::components::post::PostComp;
@@ -44,42 +45,14 @@ pub fn event(props: &Props) -> Html {
         .into_iter()
         .map(|comment: Post| {
             html! {
-                    <div>
-                        <br />
-                        <article class="message is-small">
-                            <div class="message-header is-dark has-text-primary">
-                                <p></p><p>{"Sent by "} <span class="is-italic">{ comment.sender_id }</span></p>
-                            </div>
-                            <div class="message-body has-text-primary has-background-dark is-size-5 is-centered">
-                                <button class="button is-small is-dark has-text-primary is-pulled-left">
-                                    <span class="icon is-small">
-                                        <ion-icon name="thumbs-up-sharp"></ion-icon>
-                                    </span>
-                                    <span>{"Like(s): "}{"0"}</span>
-                                </button>
-                                <button class="button is-small is-dark has-text-primary is-pulled-left">
-                                    <span class="icon is-small">
-                                        <ion-icon name="thumbs-down-sharp"></ion-icon>
-                                    </span>
-                                    <span>{"Dislike(s): "}{"0"}</span>
-                                </button>
-                                <button class="button is-small is-dark has-text-primary is-pulled-right">
-                                    <span class="icon is-small">
-                                        <ion-icon name="chatbox-ellipses-sharp"></ion-icon>
-                                    </span>
-                                    <span>{"Comment... "}</span>
-                                 </button>
-                                { comment.content }
-                            </div>
-                        </article>
-                    </div>
+                <PostComp post={comment} show_return_button={false} />
             }
         })
         .collect::<Html>();
 
     let content = match post {
         Some(post) => html! {
-            <PostComp post={post} />
+            <PostComp post={post} show_return_button={true} />
         },
         None => html! { format!{"Post \"{event_id}\" not found."} },
     };

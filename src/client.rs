@@ -33,6 +33,7 @@ pub struct Post {
     pub content: String,
     pub event_id: String,
     pub reply_to: Option<String>,
+    pub reply_ids: Vec<String>,
     pub score: i32,
 }
 
@@ -43,6 +44,10 @@ impl Post {
 
     fn decrement_score(&mut self) {
         self.score = self.score - 1;
+    }
+
+    fn add_reply_id(&mut self, event_id: String) {
+        self.reply_ids.push(event_id);
     }
 }
 
@@ -137,6 +142,7 @@ pub async fn get_posts() -> Result<Vec<Post>, StorageError> {
                                 content: content,
                                 event_id: event.event_id.to_string(),
                                 reply_to: reply_to,
+                                reply_ids: vec![],
                                 score: 0,
                             });
                         }
@@ -162,6 +168,22 @@ pub async fn get_posts() -> Result<Vec<Post>, StorageError> {
                 AnyTimelineEvent::State(_) => {}
             }
         }
+
+        let room_posts_clone = room_posts.clone();
+
+        for original_post in &mut room_posts {
+            for post in &room_posts_clone {
+                match post.reply_to.clone() {
+                    Some(reply_to) => {
+                        if reply_to == original_post.event_id {
+                            original_post.add_reply_id(post.event_id.clone());
+                        }
+                    }
+                    None => {}
+                }
+            }
+        }
+
         room_posts.reverse();
         posts.push(room_posts);
         log!(format!("Got posts from \"{room_name}\"!"));

@@ -36,7 +36,7 @@ pub fn feed() -> Html {
                                         html! {}
                                     },
                                     None => html! {
-                                        <PostComp post={post} />
+                                        <PostComp post={post} show_return_button={false} />
                                     }
                                 }
                             }

@@ -6,6 +6,7 @@ use crate::{client::Post, Route};
 #[derive(Properties, PartialEq)]
 pub struct Props {
     pub post: Post,
+    pub show_return_button: bool,
 }
 
 #[function_component(PostComp)]
@@ -40,18 +41,40 @@ pub fn post(props: &Props) -> Html {
                     <span class="text-3xl font-bold">{ post.content.clone() }</span>
                 </Link<Route>>
                 <div class="flex gap-2"> //bottom
-                    <button class="flex gap-1 hover:bg-tuatara-500 p-2 rounded">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                    <Link<Route> to={Route::Event { event_id: post.event_id.clone() }} classes={classes!(String::from(
+                        "flex gap-1 hover:bg-tuatara-500 p-2 rounded group"))}
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
+                            class="w-6 h-6 group-hover:stroke-charm-300">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M7.5 8.25h9m-9 3H12m-9.75 1.51c0 1.6 1.123 2.994 2.707 3.227 1.129.166 2.27.293 3.423.379.35.026.67.21.865.501L12 21l2.755-4.133a1.14 1.14 0 01.865-.501 48.172 48.172 0 003.423-.379c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0012 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018z" />
                         </svg>
-                        <span class="">{"0 Comments"}</span>
-                    </button>
-                    <button class="flex gap-1 hover:bg-tuatara-500 p-2 rounded">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                        <span class="group-hover:text-charm-300">{post.reply_ids.clone().len()}{" Comment(s)"}</span>
+                    </Link<Route>>
+                    <button class="flex gap-1 hover:bg-tuatara-500 p-2 rounded group">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
+                             class="w-6 h-6 group-hover:stroke-charm-300">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M15.182 15.182a4.5 4.5 0 01-6.364 0M21 12a9 9 0 11-18 0 9 9 0 0118 0zM9.75 9.75c0 .414-.168.75-.375.75S9 10.164 9 9.75 9.168 9 9.375 9s.375.336.375.75zm-.375 0h.008v.015h-.008V9.75zm5.625 0c0 .414-.168.75-.375.75s-.375-.336-.375-.75.168-.75.375-.75.375.336.375.75zm-.375 0h.008v.015h-.008V9.75z" />
                         </svg>
-                        <span>{"React"}</span>
+                        <span class="group-hover:text-charm-300">{"React"}</span>
                     </button>
+                    {
+                        if props.show_return_button {
+                            match post.reply_to.clone() {
+                                Some(reply_to) => html! {
+                                    <Link<Route> to={Route::Event { event_id: reply_to }} classes={classes!(String::from(
+                                            "flex gap-1 hover:bg-tuatara-500 p-2 rounded group"))}
+                                    >
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
+                                             class="w-6 h-6 group-hover:stroke-charm-300">
+                                          <path stroke-linecap="round" stroke-linejoin="round" d="M9 15L3 9m0 0l6-6M3 9h12a6 6 0 010 12h-3" />
+                                        </svg>
+                                        <span class="group-hover:text-charm-300">{"Return"}</span>
+                                    </Link<Route>>
+                                },
+                                None => html! {}
+                            }
+                        } else { html! {} }
+                    }
                 </div>
             </div>
         </div>
