@@ -191,7 +191,7 @@ pub async fn react_to_event(
     reaction: String,
 ) -> Result<String, StorageError> {
     let client = get_client().await?;
-    client.sync_once(SyncSettings::default()).await.unwrap();
+    client.sync_once(get_sync_settings()).await.unwrap();
     let room_id = RoomId::parse(room_id).unwrap();
     let room = client.get_joined_room(&room_id).unwrap();
     let posts: Vec<Post> = LocalStorage::get("matrix-social:posts")?;
@@ -206,7 +206,7 @@ pub async fn react_to_event(
             break;
         }
     }
-
+    client.sync_once(get_sync_settings()).await.unwrap();
     Ok(String::from(""))
 }
 

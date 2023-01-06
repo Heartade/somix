@@ -21,22 +21,36 @@ pub fn post(props: &Props) -> Html {
     let room_id_state = use_state(|| post.room_id.clone());
     let event_id_state = use_state(|| post.event_id.clone());
 
-    let upvote_onclick = {
+    let react_callback = {
         let room_id_state = room_id_state.clone();
         let event_id_state = event_id_state.clone();
-        Callback::from(move |_| {
+        Callback::from(move |reaction: String| {
             let room_id_state = room_id_state.clone();
             let event_id_state = event_id_state.clone();
             wasm_bindgen_futures::spawn_local(async move {
                 react_to_event(
                     room_id_state.deref().to_string(),
                     event_id_state.deref().to_string(),
-                    "👍️".to_string(),
+                    reaction,
                 )
                 .await
                 .unwrap();
                 event_id_state.set(event_id_state.clone().deref().to_string()); //refresh
             });
+        })
+    };
+
+    let upvote_onclick = {
+        let react_callback = react_callback.clone();
+        Callback::from(move |_| {
+            react_callback.emit("👍️".to_string());
+        })
+    };
+
+    let downvote_onclick = {
+        let react_callback = react_callback.clone();
+        Callback::from(move |_| {
+            react_callback.emit("👎️".to_string());
         })
     };
 
@@ -50,7 +64,7 @@ pub fn post(props: &Props) -> Html {
                     </svg>
                 </button> //thumbs up
                 <span class="text-center text-tuatara-400">{post.score.to_string()}</span>
-                <button class="group hover:bg-tuatara-500 rounded p-1">
+                <button class="group hover:bg-tuatara-500 rounded p-1" onclick={downvote_onclick}>
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
                          class="w-6 h-6 stroke-tuatara-400 group-hover:stroke-stiletto-500">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m0 0l6.75-6.75M12 19.5l-6.75-6.75" />
