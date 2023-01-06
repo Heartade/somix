@@ -185,6 +185,31 @@ pub async fn get_posts() -> Result<Vec<Post>, StorageError> {
     Ok(vec![])
 }
 
+pub async fn react_to_event(
+    room_id: String,
+    event_id: String,
+    reaction: String,
+) -> Result<String, StorageError> {
+    let client = get_client().await?;
+    client.sync_once(SyncSettings::default()).await.unwrap();
+    let room_id = RoomId::parse(room_id).unwrap();
+    let room = client.get_joined_room(&room_id).unwrap();
+    let posts: Vec<Post> = LocalStorage::get("matrix-social:posts")?;
+
+    for post in posts {
+        if &post.event_id == &event_id {
+            let event_id: OwnedEventId = EventId::parse(event_id.clone()).unwrap();
+            let relation = ruma::events::reaction::Relation::new(event_id, reaction.clone());
+            let reaction_content = ReactionEventContent::new(relation);
+
+            room.send(reaction_content, None).await.unwrap();
+            break;
+        }
+    }
+
+    Ok(String::from(""))
+}
+
 fn get_sync_settings() -> SyncSettings<'static> {
     let mut sync_settings_filter_definition = FilterDefinition::default();
     let mut room_filter = RoomFilter::default();
