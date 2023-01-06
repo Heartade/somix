@@ -1,7 +1,12 @@
+use std::ops::Deref;
+
 use yew::prelude::*;
 use yew_router::prelude::*;
 
-use crate::{client::Post, Route};
+use crate::{
+    client::{react_to_event, Post},
+    Route,
+};
 
 #[derive(Properties, PartialEq)]
 pub struct Props {
@@ -12,10 +17,33 @@ pub struct Props {
 #[function_component(PostComp)]
 pub fn post(props: &Props) -> Html {
     let post = props.post.clone();
+
+    let room_id_state = use_state(|| post.room_id.clone());
+    let event_id_state = use_state(|| post.event_id.clone());
+
+    let upvote_onclick = {
+        let room_id_state = room_id_state.clone();
+        let event_id_state = event_id_state.clone();
+        Callback::from(move |_| {
+            let room_id_state = room_id_state.clone();
+            let event_id_state = event_id_state.clone();
+            wasm_bindgen_futures::spawn_local(async move {
+                react_to_event(
+                    room_id_state.deref().to_string(),
+                    event_id_state.deref().to_string(),
+                    "👍️".to_string(),
+                )
+                .await
+                .unwrap();
+                event_id_state.set(event_id_state.clone().deref().to_string()); //refresh
+            });
+        })
+    };
+
     html! {
         <div class="flex w-full mb-4 border border-tuatara-400 rounded bg-tuatara-600">
             <div class="flex flex-col bg-tuatara-700 p-2 rounded"> //left
-                <button class="group hover:bg-tuatara-500 rounded p-1">
+                <button class="group hover:bg-tuatara-500 rounded p-1" onclick={upvote_onclick}>
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
                          class="w-6 h-6 stroke-tuatara-400 group-hover:stroke-charm-300">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M12 19.5v-15m0 0l-6.75 6.75M12 4.5l6.75 6.75" />

@@ -13,10 +13,11 @@ use matrix_sdk::{
 };
 use ruma::{
     api::client::{
-        filter::{EventFormat, FilterDefinition, LazyLoadOptions, RoomEventFilter, RoomFilter},
+        filter::{FilterDefinition, LazyLoadOptions, RoomEventFilter, RoomFilter},
         sync::sync_events::v3::Filter,
     },
-    events::room::message::sanitize::RemoveReplyFallback,
+    events::{reaction::ReactionEventContent, room::message::sanitize::RemoveReplyFallback},
+    EventId, OwnedEventId, RoomId, UInt,
 };
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
@@ -59,18 +60,7 @@ pub async fn login(user_id: String, password: String) -> Result<String, String> 
     log!("Successfully logged in!");
     log!("syncing...");
 
-    let mut sync_settings_filter_definition = FilterDefinition::empty();
-    sync_settings_filter_definition.room = RoomFilter::empty();
-    sync_settings_filter_definition.room.timeline = RoomEventFilter::empty();
-    sync_settings_filter_definition
-        .room
-        .timeline
-        .lazy_load_options = LazyLoadOptions::Enabled {
-        include_redundant_members: false,
-    };
-    let sync_settings = SyncSettings::new().filter(Filter::from(sync_settings_filter_definition));
-
-    client.sync_once(sync_settings).await.unwrap();
+    client.sync_once(get_sync_settings()).await.unwrap();
     log!("Successfully synced!");
     let access_token = client.access_token().unwrap();
     let device_id = client.device_id().unwrap();
@@ -95,11 +85,8 @@ pub async fn get_posts() -> Result<Vec<Post>, StorageError> {
     let client = get_client().await?;
 
     log!("Syncing...");
-    let response = client.sync_once(SyncSettings::default()).await.unwrap();
-    client
-        .sync_once(SyncSettings::default().token(response.next_batch))
-        .await
-        .unwrap();
+
+    let response = client.sync_once(get_sync_settings().clone()).await.unwrap();
     log!("Synced!");
 
     log!("Getting posts...");
@@ -107,9 +94,13 @@ pub async fn get_posts() -> Result<Vec<Post>, StorageError> {
     for room in client.joined_rooms() {
         let room_name = room.name().unwrap();
         let room_id = room.room_id().to_string();
-        log!(format!("Getting posts from \"{room_name}\"...",));
-        let messages = room.messages(MessagesOptions::backward()).await.unwrap();
+        log!(format!("Getting posts from \"{room_name}\" ({room_id})...",));
+
+        let mut messages_options = MessagesOptions::backward();
+        messages_options.limit = UInt::from(100u32);
+        let messages = room.messages(messages_options).await.unwrap();
         let mut room_posts: Vec<Post> = vec![];
+
         for message in messages.chunk.iter().rev() {
             let event = message.event.deserialize().unwrap();
             let sender_name = event.sender().to_string();
@@ -192,4 +183,23 @@ pub async fn get_posts() -> Result<Vec<Post>, StorageError> {
     LocalStorage::set("matrix-social:posts".to_string(), mixed_posts).unwrap();
     log!("Got posts!");
     Ok(vec![])
+}
+
+fn get_sync_settings() -> SyncSettings<'static> {
+    let mut sync_settings_filter_definition = FilterDefinition::default();
+    let mut room_filter = RoomFilter::default();
+    let mut room_filter_timeline = RoomEventFilter::default();
+
+    room_filter_timeline.limit = Some(UInt::from(100u32));
+    room_filter.timeline = room_filter_timeline;
+    sync_settings_filter_definition.room = room_filter;
+
+    sync_settings_filter_definition
+        .room
+        .timeline
+        .lazy_load_options = LazyLoadOptions::Enabled {
+        include_redundant_members: false,
+    };
+
+    SyncSettings::new().filter(Filter::from(sync_settings_filter_definition))
 }
