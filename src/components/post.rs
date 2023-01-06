@@ -1,30 +1,49 @@
 use std::ops::Deref;
 
+use gloo_console::log;
+use gloo_storage::{LocalStorage, Storage};
 use yew::prelude::*;
 use yew_router::prelude::*;
 
 use crate::{
-    client::{react_to_event, Post},
+    client::{self, get_posts, react_to_event, Post},
     Route,
 };
 
 #[derive(Properties, PartialEq)]
 pub struct Props {
-    pub post: Post,
+    pub event_id: String,
     pub show_return_button: bool,
 }
 
 #[function_component(PostComp)]
 pub fn post(props: &Props) -> Html {
-    let post = props.post.clone();
+    let posts: Vec<Post> = LocalStorage::get("matrix-social:posts").unwrap_or_default();
+    let mut post: Option<Post> = None;
+
+    for post_ in posts {
+        if post_.event_id == props.event_id {
+            post = Some(post_)
+        }
+    }
+    let post = post.unwrap();
+    log!(
+        "Render post {} ({})",
+        post.content.clone(),
+        post.event_id.clone()
+    );
 
     let room_id_state = use_state(|| post.room_id.clone());
     let event_id_state = use_state(|| post.event_id.clone());
 
+    let trigger = use_force_update();
+
     let react_callback = {
+        let trigger = trigger.clone();
         let room_id_state = room_id_state.clone();
         let event_id_state = event_id_state.clone();
         Callback::from(move |reaction: String| {
+            let trigger = trigger.clone();
             let room_id_state = room_id_state.clone();
             let event_id_state = event_id_state.clone();
             wasm_bindgen_futures::spawn_local(async move {
@@ -35,7 +54,8 @@ pub fn post(props: &Props) -> Html {
                 )
                 .await
                 .unwrap();
-                event_id_state.set(event_id_state.clone().deref().to_string()); //refresh
+                get_posts().await.unwrap();
+                trigger.force_update();
             });
         })
     };
