@@ -2,12 +2,16 @@ use std::ops::Deref;
 
 use gloo_console::log;
 use gloo_storage::{LocalStorage, Storage};
+use ruma::{
+    events::{reaction::ReactionEventContent, relation::RelationType, MessageLikeEvent},
+    EventId, RoomId,
+};
 use yew::prelude::*;
 use yew_router::prelude::*;
 
 use crate::{
-    client::{self, get_posts, react_to_event, Post},
-    Route,
+    client::{self, get_client, get_posts, react_to_event, redact_event, Post},
+    MatrixSocialError, Route,
 };
 
 #[derive(Properties, PartialEq)]
@@ -27,11 +31,6 @@ pub fn post(props: &Props) -> Html {
         }
     }
     let post = post.unwrap();
-    log!(
-        "Render post {} ({})",
-        post.content.clone(),
-        post.event_id.clone()
-    );
 
     let room_id_state = use_state(|| post.room_id.clone());
     let event_id_state = use_state(|| post.event_id.clone());
@@ -42,18 +41,65 @@ pub fn post(props: &Props) -> Html {
         let trigger = trigger.clone();
         let room_id_state = room_id_state.clone();
         let event_id_state = event_id_state.clone();
+        let post = post.clone();
         Callback::from(move |reaction: String| {
+            let post = post.clone();
             let trigger = trigger.clone();
             let room_id_state = room_id_state.clone();
             let event_id_state = event_id_state.clone();
             wasm_bindgen_futures::spawn_local(async move {
-                react_to_event(
+                match react_to_event(
                     room_id_state.deref().to_string(),
                     event_id_state.deref().to_string(),
                     reaction,
                 )
                 .await
-                .unwrap();
+                {
+                    Ok(_) => {}
+                    Err(e) => match e {
+                        MatrixSocialError::MatrixSDK(e) => match e {
+                            matrix_sdk::Error::Http(e) => {
+                                if e.to_string().contains("Can't send same reaction twice") {
+                                    log!("redact reaction!!!");
+                                    let client = get_client().await.unwrap();
+                                    let room_id = RoomId::parse(post.room_id.clone()).unwrap();
+                                    let event_id = EventId::parse(post.event_id.clone()).unwrap();
+                                    let request = ruma::api::client::relations::get_relating_events_with_rel_type::v1::Request::new(
+                                            &room_id, &event_id, RelationType::Annotation);
+                                    let resp = client.send(request, None).await.unwrap();
+                                    for event in resp.chunk.iter() {
+                                        let event: MessageLikeEvent<ReactionEventContent> =
+                                            serde_json::from_str(event.json().to_string().as_str())
+                                                .unwrap();
+                                        match event {
+                                            MessageLikeEvent::Original(event) => {
+                                                if event.sender == client.session().unwrap().user_id
+                                                {
+                                                    if event.content.relates_to.key
+                                                        == "👍️".to_string()
+                                                        || event.content.relates_to.key
+                                                            == "👎️".to_string()
+                                                    {
+                                                        redact_event(
+                                                            event.room_id.to_string(),
+                                                            event.event_id.to_string(),
+                                                        )
+                                                        .await;
+                                                    }
+                                                }
+                                            }
+                                            _ => {}
+                                        }
+                                    }
+                                } else {
+                                    log!(e.to_string())
+                                }
+                            }
+                            _ => log!(e.to_string()),
+                        },
+                        MatrixSocialError::Storage(e) => log!(e.to_string()),
+                    },
+                }
                 get_posts().await.unwrap();
                 trigger.force_update();
             });

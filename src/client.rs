@@ -24,7 +24,7 @@ use serde_json::Value;
 
 use gloo_storage::{errors::StorageError, LocalStorage, Storage};
 
-use crate::round_robin_vec_merge;
+use crate::{round_robin_vec_merge, MatrixSocialError};
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq)]
 pub struct Post {
@@ -189,7 +189,7 @@ pub async fn react_to_event(
     room_id: String,
     event_id: String,
     reaction: String,
-) -> Result<String, StorageError> {
+) -> Result<String, MatrixSocialError> {
     let client = get_client().await?;
     client.sync_once(get_sync_settings()).await.unwrap();
     let room_id = RoomId::parse(room_id).unwrap();
@@ -202,12 +202,21 @@ pub async fn react_to_event(
             let relation = ruma::events::reaction::Relation::new(event_id, reaction.clone());
             let reaction_content = ReactionEventContent::new(relation);
 
-            room.send(reaction_content, None).await.unwrap();
+            room.send(reaction_content, None).await?;
             break;
         }
     }
     client.sync_once(get_sync_settings()).await.unwrap();
     Ok(String::from(""))
+}
+
+pub async fn redact_event(room_id: String, event_id: String) {
+    let client = get_client().await.unwrap();
+    let event_id = EventId::parse(event_id).unwrap();
+    let room_id = RoomId::parse(room_id).unwrap();
+    client.sync_once(get_sync_settings()).await.unwrap();
+    let room = client.get_joined_room(&room_id).unwrap();
+    room.redact(&event_id, None, None).await.unwrap();
 }
 
 fn get_sync_settings() -> SyncSettings<'static> {
