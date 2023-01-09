@@ -5,6 +5,7 @@ use std::collections::VecDeque;
 
 use crate::components::{event::Event, feed::Feed, login::Login, nav::Nav};
 use gloo_console::log;
+use gloo_storage::errors::StorageError;
 use yew::prelude::*;
 use yew_router::prelude::*;
 
@@ -64,4 +65,21 @@ fn round_robin_vec_merge<T: Clone>(mut vecs: Vec<Vec<T>>) -> Vec<T> {
     }
 
     result
+}
+
+pub enum MatrixSocialError {
+    Storage(StorageError),
+    MatrixSDK(matrix_sdk::Error),
+}
+
+impl From<StorageError> for MatrixSocialError {
+    fn from(e: StorageError) -> Self {
+        MatrixSocialError::Storage(e)
+    }
+}
+
+impl From<matrix_sdk::Error> for MatrixSocialError {
+    fn from(e: matrix_sdk::Error) -> Self {
+        MatrixSocialError::MatrixSDK(e)
+    }
 }
