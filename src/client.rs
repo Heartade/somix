@@ -219,7 +219,7 @@ pub async fn redact_event(room_id: String, event_id: String) {
     room.redact(&event_id, None, None).await.unwrap();
 }
 
-fn get_sync_settings() -> SyncSettings<'static> {
+pub fn get_sync_settings() -> SyncSettings<'static> {
     let mut sync_settings_filter_definition = FilterDefinition::default();
     let mut room_filter = RoomFilter::default();
     let mut room_filter_timeline = RoomEventFilter::default();

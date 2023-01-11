@@ -26,7 +26,7 @@ pub fn nav() -> Html {
     };
 
     html! {
-        <nav class="top-0 sticky bg-tuatara-600">
+        <nav class="top-0 sticky bg-tuatara-600 z-50">
             <div class="px-8 mx-auto">
                 <div class="flex justify-between items-center">
                     <div class="flex space-x-4">
