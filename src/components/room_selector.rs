@@ -33,7 +33,7 @@ pub fn room_selector(props: &Props) -> Html {
         });
     }
     html! {
-        <div class="text-charm-400 relative bg-tuatara-600 border border-tuatara-400 rounded p-4">
+        <div class="text-charm-400 relative bg-tuatara-600 border border-tuatara-400 rounded p-4 w-96">
             <div class="">
             {
                 {

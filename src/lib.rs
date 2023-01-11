@@ -3,7 +3,7 @@ mod components;
 
 use std::collections::VecDeque;
 
-use crate::components::{event::Event, feed::Feed, login::Login, nav::Nav};
+use crate::components::{event::Event, feed::Feed, login::Login, nav::Nav, new::New};
 use gloo_console::log;
 use gloo_storage::errors::StorageError;
 use yew::prelude::*;
@@ -15,6 +15,8 @@ pub enum Route {
     Home,
     #[at("/feed")]
     Feed,
+    #[at("/new")]
+    New,
     #[at("/login")]
     Login,
     #[at("/$/:event_id")]
@@ -30,6 +32,7 @@ pub fn switch(routes: Route) -> Html {
             html! { <p class="text-4xl text-center text-bold text-charm-400">{"Welcome to matrix-social!"}</p> }
         }
         Route::Feed => html! { <Feed /> },
+        Route::New => html! { <New />},
         Route::Login => html! { <Login /> },
         Route::Event { event_id } => html! { <Event event_id={ event_id } /> },
         Route::NotFound => {
@@ -67,6 +70,7 @@ fn round_robin_vec_merge<T: Clone>(mut vecs: Vec<Vec<T>>) -> Vec<T> {
     result
 }
 
+#[derive(Debug)]
 pub enum MatrixSocialError {
     Storage(StorageError),
     MatrixSDK(matrix_sdk::Error),

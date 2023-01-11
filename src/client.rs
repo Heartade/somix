@@ -210,6 +210,16 @@ pub async fn react_to_event(
     Ok(String::from(""))
 }
 
+pub async fn send_message(room_id: String, body: String) -> Result<String, MatrixSocialError> {
+    let client = get_client().await?;
+    client.sync_once(get_sync_settings()).await.unwrap();
+    let room_id = RoomId::parse(room_id).unwrap();
+    let room = client.get_joined_room(&room_id).unwrap();
+    let content = RoomMessageEventContent::text_plain(body);
+    let resp = room.send(content, None).await?;
+    Ok(resp.event_id.to_string())
+}
+
 pub async fn redact_event(room_id: String, event_id: String) {
     let client = get_client().await.unwrap();
     let event_id = EventId::parse(event_id).unwrap();
