@@ -94,7 +94,7 @@ pub async fn get_posts() -> Result<Vec<Post>, StorageError> {
     log!("Getting posts...");
     let mut posts: Vec<Vec<Post>> = vec![];
     for room in client.joined_rooms() {
-        let room_name = room.name().unwrap();
+        let room_name = room.display_name().await.unwrap().to_string();
         let room_id = room.room_id().to_string();
         log!(format!("Getting posts from \"{room_name}\" ({room_id})...",));
 

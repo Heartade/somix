@@ -83,7 +83,7 @@ pub fn room_selector(props: &Props) -> Html {
                                         };
                                         html! {
                                             <button class="hover:bg-tuatara-400 hover:text-charm-300" onclick={onclick}>
-                                                <span>{room.name()}</span>
+                                                <span>{room_display_names_state.deref().clone().get(&room.room_id().to_string()).unwrap().to_string()}</span>
                                             </button>
                                         }
                                     }).collect::<Html>()
