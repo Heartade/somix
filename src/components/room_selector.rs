@@ -1,4 +1,4 @@
-use std::ops::Deref;
+use std::{collections::HashMap, ops::Deref};
 
 use matrix_sdk::room::Room;
 use yew::prelude::*;
@@ -19,17 +19,26 @@ pub fn room_selector(props: &Props) -> Html {
     };
     let loading_state = use_state(|| true);
     let rooms_state: UseStateHandle<Vec<Room>> = use_state(|| vec![]);
+    let room_display_names_state = use_state(|| HashMap::new());
     let current_selected_state = use_state(|| "None".to_string());
     {
         let rooms_state = rooms_state.clone();
         let loading_state = loading_state.clone();
+        let room_display_names_state = room_display_names_state.clone();
         wasm_bindgen_futures::spawn_local(async move {
             let client = get_client().await.unwrap();
             client.sync_once(get_sync_settings()).await.unwrap();
             let mut rooms = client.rooms();
-            rooms.sort_by_key(|room| room.name().unwrap().to_lowercase());
+            let mut room_names = HashMap::new();
+            for room in rooms.clone() {
+                let room_name = room.display_name().await.unwrap().to_string();
+                room_names.insert(room.room_id().to_string(), room_name);
+            }
+            rooms.sort_by_key(|room| room_names.get(&room.room_id().to_string()).unwrap());
+
             rooms_state.set(rooms);
             loading_state.set(false);
+            room_display_names_state.set(room_names);
         });
     }
     html! {
@@ -63,9 +72,11 @@ pub fn room_selector(props: &Props) -> Html {
                                             let onchange = props.onchange.clone();
                                             let room = room.clone();
                                             let current_selected_state = current_selected_state.clone();
+                                            let room_display_names_state = room_display_names_state.clone();
                                             let toggle_button = toggle_button.clone();
                                             Callback::from(move |_| {
-                                                current_selected_state.set(room.name().unwrap().clone());
+                                                let room_id = room.room_id().to_string();
+                                                current_selected_state.set(room_display_names_state.deref().clone().get(&room_id).unwrap().to_string());
                                                 onchange.emit(room.clone());
                                                 toggle_button.emit("".to_string());
                                             })
