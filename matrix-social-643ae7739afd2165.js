@@ -968,7 +968,7 @@ function getImports() {
         const ret = makeMutClosure(arg0, arg1, 24, __wbg_adapter_34);
         return addHeapObject(ret);
     };
-    imports.wbg.__wbindgen_closure_wrapper4965 = function(arg0, arg1, arg2) {
+    imports.wbg.__wbindgen_closure_wrapper4970 = function(arg0, arg1, arg2) {
         const ret = makeMutClosure(arg0, arg1, 24, __wbg_adapter_39);
         return addHeapObject(ret);
     };
@@ -1008,7 +1008,7 @@ function initSync(module) {
 
 async function init(input) {
     if (typeof input === 'undefined') {
-        input = new URL('matrix-social-b8bcca4c1385adfa_bg.wasm', import.meta.url);
+        input = new URL('matrix-social-643ae7739afd2165_bg.wasm', import.meta.url);
     }
     const imports = getImports();
 
