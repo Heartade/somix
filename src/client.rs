@@ -1,3 +1,5 @@
+use std::ops::Deref;
+
 use gloo_console::log;
 use matrix_sdk::{
     config::SyncSettings,
@@ -102,7 +104,15 @@ pub async fn get_posts() -> Result<Vec<Post>, StorageError> {
         let mut room_posts: Vec<Post> = vec![];
 
         for message in messages.chunk.iter().rev() {
-            let event = message.event.deserialize().unwrap();
+            let event = match message.event.deserialize(){
+                Ok(event) => {
+                    event
+                },
+                Err(error) => {
+                    log!("Error deserializing event: ", error.to_string(), "\n\n", message.event.json().to_string());
+                    continue;
+                }
+           };
             let sender_name = event.sender().to_string();
             match event {
                 AnyTimelineEvent::MessageLike(event) => match event {
