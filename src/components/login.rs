@@ -1,6 +1,5 @@
 use std::ops::Deref;
 
-use gloo_console::log;
 use yew::prelude::*;
 use yew_router::prelude::*;
 

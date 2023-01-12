@@ -1,5 +1,3 @@
-use std::ops::Deref;
-
 use gloo_console::log;
 use matrix_sdk::{
     config::SyncSettings,
@@ -65,7 +63,6 @@ pub async fn login(user_id: String, password: String) -> Result<String, String> 
     client.sync_once(get_sync_settings()).await.unwrap();
     log!("Successfully synced!");
     let access_token = client.access_token().unwrap();
-    let device_id = client.device_id().unwrap();
     let session = client.session().unwrap();
     LocalStorage::set("matrix-social:session", session).unwrap();
     Ok(access_token)
@@ -88,7 +85,7 @@ pub async fn get_posts() -> Result<Vec<Post>, StorageError> {
 
     log!("Syncing...");
 
-    let response = client.sync_once(get_sync_settings().clone()).await.unwrap();
+    client.sync_once(get_sync_settings().clone()).await.unwrap();
     log!("Synced!");
 
     log!("Getting posts...");
@@ -104,15 +101,18 @@ pub async fn get_posts() -> Result<Vec<Post>, StorageError> {
         let mut room_posts: Vec<Post> = vec![];
 
         for message in messages.chunk.iter().rev() {
-            let event = match message.event.deserialize(){
-                Ok(event) => {
-                    event
-                },
+            let event = match message.event.deserialize() {
+                Ok(event) => event,
                 Err(error) => {
-                    log!("Error deserializing event: ", error.to_string(), "\n\n", message.event.json().to_string());
+                    log!(
+                        "Error deserializing event: ",
+                        error.to_string(),
+                        "\n\n",
+                        message.event.json().to_string()
+                    );
                     continue;
                 }
-           };
+            };
             let sender_name = event.sender().to_string();
             match event {
                 AnyTimelineEvent::MessageLike(event) => match event {

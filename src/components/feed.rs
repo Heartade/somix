@@ -4,8 +4,6 @@ use crate::{
     Route,
 };
 
-use gloo_console::log;
-use gloo_storage::errors::StorageError::*;
 use gloo_storage::{LocalStorage, Storage};
 use yew::prelude::*;
 use yew_router::prelude::*;
@@ -32,7 +30,7 @@ pub fn feed() -> Html {
                         posts.into_iter().map(|post: Post| {
                             html! {
                                 match post.reply_to {
-                                    Some(reply_to) => {
+                                    Some(_) => {
                                         html! {}
                                     },
                                     None => html! {

@@ -10,7 +10,7 @@ use yew::prelude::*;
 use yew_router::prelude::*;
 
 use crate::{
-    client::{self, get_client, get_posts, react_to_event, redact_event, Post},
+    client::{get_client, get_posts, react_to_event, redact_event, Post},
     MatrixSocialError, Route,
 };
 

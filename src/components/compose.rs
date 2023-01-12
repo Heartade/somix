@@ -1,13 +1,12 @@
 use std::ops::Deref;
 
-use gloo_console::log;
 use wasm_bindgen::JsCast;
 use web_sys::HtmlInputElement;
 use yew::prelude::*;
-use yew_router::{navigator, prelude::*};
+use yew_router::prelude::*;
 
 use crate::{
-    client::{self, get_posts, send_message},
+    client::{get_posts, send_message},
     Route,
 };
 

@@ -1,6 +1,6 @@
+use gloo_console::log;
 use gloo_storage::{LocalStorage, Storage};
 use yew::prelude::*;
-use yew_router::prelude::*;
 
 use crate::client::Post;
 use crate::components::post::PostComp;
@@ -29,7 +29,9 @@ pub fn event(props: &Props) -> Html {
                 }
             }
         }
-        Err(e) => {}
+        Err(e) => {
+            log!(e.to_string());
+        }
     }
 
     let comments: Html = comments
