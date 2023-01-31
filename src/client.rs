@@ -16,7 +16,11 @@ use ruma::{
         filter::{FilterDefinition, LazyLoadOptions, RoomEventFilter, RoomFilter},
         sync::sync_events::v3::Filter,
     },
-    events::{reaction::ReactionEventContent, room::message::sanitize::RemoveReplyFallback},
+    events::{
+        reaction::ReactionEventContent,
+        room::message::{sanitize::RemoveReplyFallback, ForwardThread, TextMessageEventContent},
+        OriginalMessageLikeEvent,
+    },
     EventId, OwnedEventId, RoomId, UInt,
 };
 use serde::{Deserialize, Serialize};
@@ -36,6 +40,7 @@ pub struct Post {
     pub reply_to: Option<String>,
     pub reply_ids: Vec<String>,
     pub score: i32,
+    pub source: OriginalMessageLikeEvent<RoomMessageEventContent>,
 }
 
 impl Post {
@@ -145,6 +150,7 @@ pub async fn get_posts() -> Result<Vec<Post>, StorageError> {
                                 reply_to: reply_to,
                                 reply_ids: vec![],
                                 score: 0,
+                                source: event,
                             });
                         }
                         matrix_sdk::ruma::events::MessageLikeEvent::Redacted(_) => {}
@@ -227,6 +233,18 @@ pub async fn send_message(room_id: String, body: String) -> Result<String, Matri
     let room = client.get_joined_room(&room_id).unwrap();
     let content = RoomMessageEventContent::text_plain(body);
     let resp = room.send(content, None).await?;
+    Ok(resp.event_id.to_string())
+}
+
+pub async fn reply_to_message(post: Post, body: String) -> Result<String, MatrixSocialError> {
+    let client = get_client().await?;
+    client.sync_once(get_sync_settings()).await?;
+    let room_id = RoomId::parse(post.room_id.clone()).unwrap();
+    let room = client.get_joined_room(&room_id).unwrap();
+    let message_content = TextMessageEventContent::plain(body);
+    let message = ruma::events::room::message::MessageType::Text(message_content);
+    let content = RoomMessageEventContent::reply(message, &post.source, ForwardThread::No);
+    let resp = room.send(content, None).await.unwrap();
     Ok(resp.event_id.to_string())
 }
 
