@@ -58,10 +58,11 @@ impl Post {
 }
 
 pub async fn login(user_id: String, password: String) -> Result<String, String> {
-    let user: &UserId = &UserId::parse(user_id.clone()).unwrap();
-    let client: Client = Client::builder().user_id(user).build().await.unwrap();
-    log!("Logging in with", &user_id);
-    client.login_username(user, &password).send().await.unwrap();
+    let user_id: &UserId = &UserId::parse(user_id.clone()).unwrap();
+    let server_name = user_id.server_name();
+    let client: Client = Client::builder().server_name(server_name).build().await.unwrap();
+    log!("Logging in with", user_id.to_string());
+    client.login_username(user_id, &password).send().await.unwrap();
     log!("Successfully logged in!");
     log!("syncing...");
 
@@ -77,7 +78,7 @@ pub async fn get_client() -> Result<Client, StorageError> {
     let stored_session: Value = LocalStorage::get("matrix-social:session")?;
     let session: Session = serde_json::from_value(stored_session).unwrap();
     let client: Client = Client::builder()
-        .user_id(&session.user_id)
+        .server_name(session.user_id.server_name())
         .build()
         .await
         .unwrap();
