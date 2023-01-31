@@ -21,7 +21,6 @@ pub fn event(props: &Props) -> Html {
         Ok(posts) => {
             let posts: Vec<Post> = posts;
             for post_ in posts {
-                log!(post_.event_id.clone(), " vs ", event_id.clone());
                 if post_.clone().event_id == event_id {
                     post.push(post_.clone());
                     break;
