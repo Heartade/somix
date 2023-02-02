@@ -1,3 +1,4 @@
+pub mod alias;
 pub mod compose;
 pub mod event;
 pub mod feed;
@@ -5,5 +6,6 @@ pub mod login;
 pub mod nav;
 pub mod new;
 pub mod post;
+pub mod room;
 pub mod room_selector;
 pub mod text_input;

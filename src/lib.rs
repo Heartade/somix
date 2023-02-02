@@ -3,7 +3,8 @@ mod components;
 
 use std::collections::VecDeque;
 
-use crate::components::{event::Event, feed::Feed, login::Login, nav::Nav, new::New};
+use crate::components::{event::Event, feed::Feed, login::Login, nav::Nav, new::New, room::Room};
+use components::alias::Alias;
 use gloo_console::log;
 use gloo_storage::errors::StorageError;
 use yew::prelude::*;
@@ -21,6 +22,10 @@ pub enum Route {
     Login,
     #[at("/$/:event_id")]
     Event { event_id: String },
+    #[at("/!/:room_id")]
+    Room { room_id: String },
+    #[at("/alias/:room_alias")]
+    Alias { room_alias: String },
     #[not_found]
     #[at("/404")]
     NotFound,
@@ -35,6 +40,8 @@ pub fn switch(routes: Route) -> Html {
         Route::New => html! { <New />},
         Route::Login => html! { <Login /> },
         Route::Event { event_id } => html! { <Event event_id={ event_id } /> },
+        Route::Room { room_id } => html! { <Room room_id={ room_id } /> },
+        Route::Alias { room_alias } => html! { <Alias room_alias={ room_alias } /> },
         Route::NotFound => {
             html! { <p class="text-4xl text-center text-bold text-charm-400">{"404 Not Found"}</p> }
         }
@@ -47,7 +54,6 @@ pub fn app() -> Html {
     html! {
         <BrowserRouter>
             <Nav></Nav>
-            <br/>
             <Switch<Route> render={switch} />
         </BrowserRouter>
     }

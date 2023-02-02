@@ -139,10 +139,10 @@ pub fn post(props: &Props) -> Html {
             </div>
             <div class="flex flex-col w-full bg-tuatara-600 text-charm-400 p-4 rounded"> //right
                 <div class="flex gap-2 text-charm-400 justify-between"> //top
-                    <a class="flex gap-1 align group">
-                        <img src="http://localhost:8080/assets/logo_128x128.webp" class="h-6 w-6 rounded-full" /> //room image
+                    <Link<Route> to={Route::Room { room_id: post.room_id.clone() }} classes={classes!{String::from("flex gap-1 align group")}}>
+                        <img src="assets/logo_128x128.webp" class="h-6 w-6 rounded-full" /> //room image
                         <span class="group-hover:text-charm-300 group-hover:underline">{ post.room_name.clone() }</span> //room name
-                    </a>
+                    </Link<Route>>
                     <span>{"Sent by "}{ post.sender_id.clone() }</span>
                 </div>
                 <Link<Route> to={Route::Event { event_id: post.event_id.clone() }} classes={classes!(String::from("py-4 hover:text-charm-300"))}>

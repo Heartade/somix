@@ -60,9 +60,17 @@ impl Post {
 pub async fn login(user_id: String, password: String) -> Result<String, String> {
     let user_id: &UserId = &UserId::parse(user_id.clone()).unwrap();
     let server_name = user_id.server_name();
-    let client: Client = Client::builder().server_name(server_name).build().await.unwrap();
+    let client: Client = Client::builder()
+        .server_name(server_name)
+        .build()
+        .await
+        .unwrap();
     log!("Logging in with", user_id.to_string());
-    client.login_username(user_id, &password).send().await.unwrap();
+    client
+        .login_username(user_id, &password)
+        .send()
+        .await
+        .unwrap();
     log!("Successfully logged in!");
     log!("syncing...");
 
@@ -275,4 +283,28 @@ pub fn get_sync_settings() -> SyncSettings<'static> {
     };
 
     SyncSettings::new().filter(Filter::from(sync_settings_filter_definition))
+}
+
+pub async fn get_room_info(room_id: String) -> (String, String, String) {
+    let client = get_client().await.unwrap();
+    client.sync_once(get_sync_settings()).await.unwrap();
+    let room_id = RoomId::parse(room_id.clone()).unwrap();
+    let room = client.get_room(&room_id).unwrap();
+    let room_name = room.display_name().await.unwrap().to_string();
+    let room_desc = match room.topic() {
+        Some(desc) => desc,
+        None => "".to_string(),
+    };
+    let room_avatar_url = match room.avatar_url() {
+        Some(u) => {
+            format!(
+                "https://{}/_matrix/media/r0/thumbnail/{}/{}?width=256&height=256",
+                u.server_name().unwrap(),
+                u.server_name().unwrap(),
+                u.media_id().unwrap().to_string()
+            )
+        }
+        None => "assets/logo_128x128.webp".to_string().to_string(),
+    };
+    (room_name, room_desc, room_avatar_url)
 }
