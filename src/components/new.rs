@@ -16,9 +16,12 @@ pub fn new() -> Html {
         })
     };
     html! {
+        <>
+        <br />
         <div class="flex flex-wrap justify-center gap-4">
             <RoomSelector onchange={room_selected} />
             <Compose room_id={room_id_state.deref().clone()}/>
         </div>
+        </>
     }
 }

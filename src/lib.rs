@@ -34,7 +34,7 @@ pub enum Route {
 pub fn switch(routes: Route) -> Html {
     match routes {
         Route::Home => {
-            html! { <p class="text-4xl text-center text-bold text-charm-400">{"Welcome to matrix-social!"}</p> }
+            html! { <><br /><p class="text-4xl text-center text-bold text-charm-400">{"Welcome to matrix-social!"}</p></> }
         }
         Route::Feed => html! { <Feed /> },
         Route::New => html! { <New />},

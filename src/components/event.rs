@@ -70,14 +70,17 @@ pub fn event(props: &Props) -> Html {
         .collect::<Html>();
 
     html! {
-       <div class="flex sm:flex-nowrap justify-center">
-            <div class="w-max md:w-2/3 lg:w-1/2 xl:w-2/5 2xl:w-1/3 mx-4">
-                <PostComp event_id={event_id} show_return_button={true} />
-                <div class="flex justify-center w-full h-46 gap-4 py-1 px-8 mb-4">
-                    { compose }
-                </div>
-                { comments }
-            </div>
-       </div>
+        <>
+        <br/>
+        <div class="flex sm:flex-nowrap justify-center">
+             <div class="w-max md:w-2/3 lg:w-1/2 xl:w-2/5 2xl:w-1/3 mx-4">
+                 <PostComp event_id={event_id} show_return_button={true} />
+                 <div class="flex justify-center w-full h-46 gap-4 py-1 px-8 mb-4">
+                     { compose }
+                 </div>
+                 { comments }
+             </div>
+        </div>
+        </>
     }
 }

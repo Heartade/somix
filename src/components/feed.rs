@@ -52,6 +52,8 @@ pub fn feed() -> Html {
         },
     };
     html! {
+        <>
+        <br />
         <div class="flex flex-wrap-reverse sm:flex-nowrap justify-center">
             <div class="w-max md:w-2/3 lg:w-1/2 xl:w-2/5 2xl:w-1/3 mx-4">
                 { posts }
@@ -60,5 +62,6 @@ pub fn feed() -> Html {
                 <span class="sticky text-center text-charm-400">{"Placeholder"}</span>
             </div>
         </div>
+        </>
     }
 }
