@@ -1004,7 +1004,7 @@ function initSync(module) {
 
 async function init(input) {
     if (typeof input === 'undefined') {
-        input = new URL('matrix-social-284c0aa00e0808d4_bg.wasm', import.meta.url);
+        input = new URL('matrix-social-5d148319ef0395a2_bg.wasm', import.meta.url);
     }
     const imports = getImports();
 
