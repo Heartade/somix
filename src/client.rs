@@ -68,6 +68,7 @@ pub async fn login(user_id: String, password: String) -> Result<String, String> 
     log!("Logging in with", user_id.to_string());
     client
         .login_username(user_id, &password)
+        .initial_device_display_name("matrix-social")
         .send()
         .await
         .unwrap();
