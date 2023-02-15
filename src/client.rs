@@ -132,7 +132,7 @@ pub async fn get_posts() -> Result<Vec<Post>, StorageError> {
             match event {
                 AnyTimelineEvent::MessageLike(event) => match event {
                     AnyMessageLikeEvent::RoomMessage(event) => match event {
-                        matrix_sdk::ruma::events::MessageLikeEvent::Original(event) => {
+                        ruma::events::MessageLikeEvent::Original(event) => {
                             let content = event.content.body().to_string();
                             let (reply_to, content) = match event.clone().content.relates_to {
                                 Some(relation) => match relation {
@@ -155,15 +155,15 @@ pub async fn get_posts() -> Result<Vec<Post>, StorageError> {
                                 sender_id: sender_name,
                                 room_name: room_name.clone(),
                                 room_id: room_id.clone(),
-                                content: content,
+                                content,
                                 event_id: event.event_id.to_string(),
-                                reply_to: reply_to,
+                                reply_to,
                                 reply_ids: vec![],
                                 score: 0,
                                 source: event,
                             });
                         }
-                        matrix_sdk::ruma::events::MessageLikeEvent::Redacted(_) => {}
+                        ruma::events::MessageLikeEvent::Redacted(_) => {}
                     },
                     AnyMessageLikeEvent::Reaction(event) => match event {
                         ruma::events::MessageLikeEvent::Original(event) => {
