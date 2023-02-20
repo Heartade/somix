@@ -1,6 +1,7 @@
 
 [build]
 release = true
+filehash = false
 
 [[hooks]]
 stage = "pre_build"
