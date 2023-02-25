@@ -1,6 +1,8 @@
-# matrix-social
+# Somix (Formerly matrix-social)
 
-An experimental Matrix "Social Media" client. A deployment of the master branch can be found at https://imbev.codeberg.page/matrix-social/ .
+A Matrix "Social Media" client
+
+Try it out at https://www.somix.app!
 
 ## Requirements
 
