@@ -42,7 +42,7 @@ pub fn room(props: &Props) -> Html {
             });
         }
     }
-    let posts: Html = match LocalStorage::get("matrix-social:posts") {
+    let posts: Html = match LocalStorage::get("somix:posts") {
         Ok(posts) => {
             let posts: Vec<Post> = posts;
             html! {

@@ -17,7 +17,7 @@ pub fn event(props: &Props) -> Html {
     let mut comments: Vec<Post> = vec![];
     let mut post: Vec<Post> = vec![];
 
-    match LocalStorage::get("matrix-social:posts") {
+    match LocalStorage::get("somix:posts") {
         Ok(posts) => {
             let posts: Vec<Post> = posts;
             for post_ in posts {
@@ -32,7 +32,7 @@ pub fn event(props: &Props) -> Html {
         }
     };
 
-    match LocalStorage::get("matrix-social:posts") {
+    match LocalStorage::get("somix:posts") {
         Ok(posts) => {
             let posts: Vec<Post> = posts;
             for post in posts {

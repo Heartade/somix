@@ -15,13 +15,13 @@ pub fn feed() -> Html {
         match get_posts().await {
             Ok(_) => {}
             Err(e) => {
-                if e.to_string() == "key matrix-social:session not found".to_owned() {
+                if e.to_string() == "key somix:session not found".to_owned() {
                     navigator.push(&Route::Login);
                 }
             }
         }
     });
-    let posts: Html = match LocalStorage::get("matrix-social:posts") {
+    let posts: Html = match LocalStorage::get("somix:posts") {
         Ok(posts) => {
             let posts: Vec<Post> = posts;
             html! {
