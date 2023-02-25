@@ -22,7 +22,7 @@ pub struct Props {
 
 #[function_component(PostComp)]
 pub fn post(props: &Props) -> Html {
-    let posts: Vec<Post> = LocalStorage::get("matrix-social:posts").unwrap_or_default();
+    let posts: Vec<Post> = LocalStorage::get("somix:posts").unwrap_or_default();
     let mut post: Option<Post> = None;
 
     for post_ in posts {

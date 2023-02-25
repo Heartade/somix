@@ -68,7 +68,7 @@ pub async fn login(user_id: String, password: String) -> Result<String, String> 
     log!("Logging in with", user_id.to_string());
     client
         .login_username(user_id, &password)
-        .initial_device_display_name("matrix-social")
+        .initial_device_display_name("somix")
         .send()
         .await
         .unwrap();
@@ -79,12 +79,12 @@ pub async fn login(user_id: String, password: String) -> Result<String, String> 
     log!("Successfully synced!");
     let access_token = client.access_token().unwrap();
     let session = client.session().unwrap();
-    LocalStorage::set("matrix-social:session", session).unwrap();
+    LocalStorage::set("somix:session", session).unwrap();
     Ok(access_token)
 }
 
 pub async fn get_client() -> Result<Client, StorageError> {
-    let stored_session: Value = LocalStorage::get("matrix-social:session")?;
+    let stored_session: Value = LocalStorage::get("somix:session")?;
     let session: Session = serde_json::from_value(stored_session).unwrap();
     let client: Client = Client::builder()
         .server_name(session.user_id.server_name())
@@ -206,7 +206,7 @@ pub async fn get_posts() -> Result<Vec<Post>, StorageError> {
         log!(format!("Got posts from \"{room_name}\"!"));
     }
     let mixed_posts = round_robin_vec_merge(posts);
-    LocalStorage::set("matrix-social:posts".to_string(), mixed_posts).unwrap();
+    LocalStorage::set("somix:posts".to_string(), mixed_posts).unwrap();
     log!("Got posts!");
     Ok(vec![])
 }
@@ -220,7 +220,7 @@ pub async fn react_to_event(
     client.sync_once(get_sync_settings()).await.unwrap();
     let room_id = RoomId::parse(room_id).unwrap();
     let room = client.get_joined_room(&room_id).unwrap();
-    let posts: Vec<Post> = LocalStorage::get("matrix-social:posts")?;
+    let posts: Vec<Post> = LocalStorage::get("somix:posts")?;
 
     for post in posts {
         if &post.event_id == &event_id {

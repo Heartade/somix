@@ -11,13 +11,13 @@ pub fn nav() -> Html {
     let navigator = use_navigator().unwrap();
     let _location = use_location().unwrap().query_str();
     let logout = Callback::from(move |_| {
-        LocalStorage::delete("matrix-social:session");
-        LocalStorage::delete("matrix-social:posts");
+        LocalStorage::delete("somix:session");
+        LocalStorage::delete("somix:posts");
         log!("Logged out");
         navigator.push(&Route::Login);
     });
 
-    let logged_in = match LocalStorage::get("matrix-social:session") {
+    let logged_in = match LocalStorage::get("somix:session") {
         Ok(session) => {
             let session: Session = session;
             Some(session.user_id.to_string())
@@ -33,7 +33,7 @@ pub fn nav() -> Html {
                         <div>
                             <Link<Route> to={Route::Home} classes={classes!(String::from("flex items-center py-4 px-2 text-charm-400 hover:text-charm-300"))}>
                                 <img src="assets/somix_256x256.webp" class="h-12 w-12 mr-1"/>
-                                <span class="font-bold">{"matrix-social"}</span>
+                                <span class="font-bold">{"Somix"}</span>
                             </Link<Route>>
                         </div>
                         <div class="hidden md:flex items-center space-x-1">
