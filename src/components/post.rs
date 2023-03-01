@@ -2,10 +2,7 @@ use std::ops::Deref;
 
 use gloo_console::log;
 use gloo_storage::{LocalStorage, Storage};
-use ruma::{
-    events::{reaction::ReactionEventContent, relation::RelationType, MessageLikeEvent},
-    EventId, RoomId,
-};
+use ruma::{events::{reaction::ReactionEventContent, relation::RelationType, MessageLikeEvent}, EventId, RoomId};
 use yew::prelude::*;
 use yew_router::prelude::*;
 
@@ -13,6 +10,7 @@ use crate::{
     client::{get_client, get_posts, react_to_event, redact_event, Post},
     MatrixSocialError, Route,
 };
+use crate::client::get_post_info;
 
 #[derive(Properties, PartialEq)]
 pub struct Props {
@@ -35,18 +33,46 @@ pub fn post(props: &Props) -> Html {
     let room_id_state = use_state(|| post.room_id.clone());
     let event_id_state = use_state(|| post.event_id.clone());
 
-    let trigger = use_force_update();
+    let score_state = use_state(|| "loading".to_string());
+    let score_callback = {
+        let score_state = score_state.clone();
+        let event_id_state = event_id_state.clone();
+        let room_id_state = room_id_state.clone();
+        Callback::from(move |_: String| {
+            let score_state = score_state.clone();
+            let event_id_state = event_id_state.clone();
+            let room_id_state = room_id_state.clone();
+            wasm_bindgen_futures::spawn_local(async move {
+                let score_state = score_state.clone();
+                let event_id = EventId::parse(event_id_state.deref().clone()).unwrap();
+                let room_id = RoomId::parse(room_id_state.deref().clone()).unwrap();
+                let score = get_post_info(event_id, room_id).await.unwrap();
+                score_state.set(score);
+            });
+        })
+    };
+
+    {
+        let score_callback = score_callback.clone();
+        use_effect_with_deps(
+            move |_| {
+                score_callback.emit("".to_string());
+            },
+            (),
+        );
+    }
 
     let react_callback = {
-        let trigger = trigger.clone();
         let room_id_state = room_id_state.clone();
         let event_id_state = event_id_state.clone();
         let post = post.clone();
+        let score_state = score_state.clone();
         Callback::from(move |reaction: String| {
             let post = post.clone();
-            let trigger = trigger.clone();
             let room_id_state = room_id_state.clone();
             let event_id_state = event_id_state.clone();
+            let score_state = score_state.clone();
+            score_state.set("loading".to_string());
             wasm_bindgen_futures::spawn_local(async move {
                 match react_to_event(
                     room_id_state.deref().to_string(),
@@ -100,8 +126,9 @@ pub fn post(props: &Props) -> Html {
                         MatrixSocialError::Storage(e) => log!(e.to_string()),
                     },
                 }
-                get_posts().await.unwrap();
-                trigger.force_update();
+                let event_id = EventId::parse(event_id_state.deref().clone()).unwrap();
+                let room_id = RoomId::parse(room_id_state.deref().clone()).unwrap();
+                score_state.set(get_post_info(event_id, room_id).await.unwrap());
             });
         })
     };
@@ -129,7 +156,18 @@ pub fn post(props: &Props) -> Html {
                         <path stroke-linecap="round" stroke-linejoin="round" d="M12 19.5v-15m0 0l-6.75 6.75M12 4.5l6.75 6.75" />
                     </svg>
                 </button> //thumbs up
-                <span class="text-center text-tuatara-400">{post.score.to_string()}</span>
+                {
+                    match score_state.deref().clone().as_str() {
+                        "loading" => html! {
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="animate-spin w-8 h-8 stroke-tuatara-400 justify-self-center">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" />
+                            </svg>
+                        },
+                        _ => html! {
+                            <span class="text-center text-tuatara-400">{score_state.deref().clone()}</span>
+                        }
+                    }
+                }
                 <button class="group hover:bg-tuatara-500 rounded p-1" onclick={downvote_onclick}>
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
                          class="w-6 h-6 stroke-tuatara-400 group-hover:stroke-stiletto-500">

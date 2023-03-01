@@ -11,22 +11,20 @@ use matrix_sdk::{
     },
     Client, Session,
 };
-use ruma::{
-    api::client::{
-        filter::{FilterDefinition, LazyLoadOptions, RoomEventFilter, RoomFilter},
-        sync::sync_events::v3::Filter,
-    },
-    events::{
-        reaction::ReactionEventContent,
-        room::message::{sanitize::RemoveReplyFallback, ForwardThread, TextMessageEventContent},
-        OriginalMessageLikeEvent,
-    },
-    EventId, OwnedEventId, RoomId, UInt,
-};
+use ruma::{api::client::{
+    filter::{FilterDefinition, LazyLoadOptions, RoomEventFilter, RoomFilter},
+    sync::sync_events::v3::Filter,
+}, events::{
+    reaction::ReactionEventContent,
+    room::message::{sanitize::RemoveReplyFallback, ForwardThread, TextMessageEventContent},
+    OriginalMessageLikeEvent,
+}, EventId, OwnedEventId, RoomId, UInt, OwnedRoomId};
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 
 use gloo_storage::{errors::StorageError, LocalStorage, Storage};
+use ruma::api::client::relations::get_relating_events;
+use ruma::events::reaction::ReactionEvent;
 
 use crate::{round_robin_vec_merge, MatrixSocialError};
 
@@ -308,4 +306,30 @@ pub async fn get_room_info(room_id: String) -> (String, String, String) {
         None => "assets/logo_128x128.webp".to_string().to_string(),
     };
     (room_name, room_desc, room_avatar_url)
+}
+
+pub async fn get_post_info(event_id: OwnedEventId, room_id: OwnedRoomId) -> Result<String, String> {
+    let client = get_client().await.unwrap();
+    let req = get_relating_events::v1::Request::new(&room_id, &event_id);
+    let resp = client.send(req, None).await.unwrap();
+    let mut score = 0;
+    for event in resp.chunk {
+        let event = event.deserialize().unwrap();
+        match event {
+            AnyMessageLikeEvent::Reaction(event) => {
+                match event {
+                    ReactionEvent::Original(event) => {
+                        if event.content.relates_to.key.clone() == "👍️".to_string() {
+                            score += 1;
+                        } else if event.content.relates_to.key.clone() == "👎️".to_string() {
+                            score += -1;
+                        } else {}
+                    },
+                    _ => {}
+                }
+            },
+            _ => {}
+        }
+    }
+    Ok(score.to_string())
 }
