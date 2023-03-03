@@ -13,6 +13,7 @@ panic = "abort"
 
 [dependencies]
 gloo-console = "0.2.3"
+gloo-dialogs = "0.1.1"
 gloo-storage = "0.2.2"
 matrix-sdk = { version="0.6.2", features=["js", "rustls-tls"], default-features=false }
 ruma = { version="0.7.4", features=["unstable-sanitize", "unstable-msc2677", "unstable-msc3440", "client"] }

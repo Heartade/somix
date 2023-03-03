@@ -8,7 +8,7 @@ use yew_router::prelude::*;
 
 use crate::{
     client::{get_client, get_posts, react_to_event, redact_event, Post},
-    MatrixSocialError, Route,
+    SomixError, Route,
 };
 use crate::client::get_post_info;
 
@@ -83,7 +83,7 @@ pub fn post(props: &Props) -> Html {
                 {
                     Ok(_) => {}
                     Err(e) => match e {
-                        MatrixSocialError::MatrixSDK(e) => match e {
+                        SomixError::MatrixSDK(e) => match e {
                             matrix_sdk::Error::Http(e) => {
                                 if e.to_string().contains("Can't send same reaction twice") {
                                     log!("redact reaction!!!");
@@ -123,7 +123,7 @@ pub fn post(props: &Props) -> Html {
                             }
                             _ => log!(e.to_string()),
                         },
-                        MatrixSocialError::Storage(e) => log!(e.to_string()),
+                        _ => log!(format!("{e:?}")),
                     },
                 }
                 let event_id = EventId::parse(event_id_state.deref().clone()).unwrap();

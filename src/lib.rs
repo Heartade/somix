@@ -77,19 +77,46 @@ fn round_robin_vec_merge<T: Clone>(mut vecs: Vec<Vec<T>>) -> Vec<T> {
 }
 
 #[derive(Debug)]
-pub enum MatrixSocialError {
+pub enum SomixError {
     Storage(StorageError),
     MatrixSDK(matrix_sdk::Error),
+    IdParse(ruma::IdParseError),
+    Reqwest(matrix_sdk::reqwest::Error)
 }
 
-impl From<StorageError> for MatrixSocialError {
+impl From<StorageError> for SomixError {
     fn from(e: StorageError) -> Self {
-        MatrixSocialError::Storage(e)
+        SomixError::Storage(e)
     }
 }
 
-impl From<matrix_sdk::Error> for MatrixSocialError {
+impl From<matrix_sdk::Error> for SomixError {
     fn from(e: matrix_sdk::Error) -> Self {
-        MatrixSocialError::MatrixSDK(e)
+        SomixError::MatrixSDK(e)
     }
+}
+
+impl From<ruma::IdParseError> for SomixError {
+    fn from(e: ruma::IdParseError) -> Self { SomixError::IdParse(e) }
+}
+
+impl From<matrix_sdk::reqwest::Error> for SomixError {
+    fn from(e: matrix_sdk::reqwest::Error) -> Self { SomixError::Reqwest(e) }
+}
+
+pub fn error_alert(e: SomixError ) {
+    let mut message = format!("{e:?}");
+    match e {
+        SomixError::Storage(_) => {}
+        SomixError::MatrixSDK(_) => {}
+        SomixError::IdParse(e) => {
+            message = format!("The user id should be in the form of @username:example.org \n{message}");
+        },
+        SomixError::Reqwest(e) => {
+            message = format!("Unable to connect to homeserver \n{message}");
+        },
+    }
+    message = format!("An error has occurred:\n{message}");
+    log!(&message);
+    gloo_dialogs::alert(&message);
 }

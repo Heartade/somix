@@ -1,16 +1,11 @@
 use gloo_console::log;
-use matrix_sdk::{
-    config::SyncSettings,
-    room::MessagesOptions,
-    ruma::{
-        events::{
-            room::message::{sanitize::HtmlSanitizerMode, Relation, RoomMessageEventContent},
-            AnyMessageLikeEvent, AnyTimelineEvent,
-        },
-        UserId,
+use matrix_sdk::{config::SyncSettings, room::MessagesOptions, ruma::{
+    events::{
+        room::message::{sanitize::HtmlSanitizerMode, Relation, RoomMessageEventContent},
+        AnyMessageLikeEvent, AnyTimelineEvent,
     },
-    Client, Session,
-};
+    UserId,
+}, Client, Session, ClientBuildError, HttpError};
 use ruma::{api::client::{
     filter::{FilterDefinition, LazyLoadOptions, RoomEventFilter, RoomFilter},
     sync::sync_events::v3::Filter,
@@ -18,7 +13,7 @@ use ruma::{api::client::{
     reaction::ReactionEventContent,
     room::message::{sanitize::RemoveReplyFallback, ForwardThread, TextMessageEventContent},
     OriginalMessageLikeEvent,
-}, EventId, OwnedEventId, RoomId, UInt, OwnedRoomId};
+}, EventId, OwnedEventId, RoomId, UInt, OwnedRoomId, OwnedUserId};
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 
@@ -26,7 +21,7 @@ use gloo_storage::{errors::StorageError, LocalStorage, Storage};
 use ruma::api::client::relations::get_relating_events;
 use ruma::events::reaction::ReactionEvent;
 
-use crate::{round_robin_vec_merge, MatrixSocialError};
+use crate::{round_robin_vec_merge, SomixError, error_alert};
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq)]
 pub struct Post {
@@ -56,20 +51,45 @@ impl Post {
 }
 
 pub async fn login(user_id: String, password: String) -> Result<String, String> {
-    let user_id: &UserId = &UserId::parse(user_id.clone()).unwrap();
+    let user_id: OwnedUserId = match UserId::parse(user_id.clone()) {
+        Ok(user_id) => user_id,
+        Err(e) => {
+            error_alert(e.into());
+            panic!();
+        }
+    };
+    let user_id = &user_id;
     let server_name = user_id.server_name();
-    let client: Client = Client::builder()
+    let client: Client = match Client::builder()
         .server_name(server_name)
         .build()
-        .await
-        .unwrap();
+        .await {
+        Ok(client) => client,
+        Err(e) => {
+            match e {
+                ClientBuildError::Http(e) => match e {
+                    HttpError::Reqwest(e) => {
+                        error_alert(e.into());
+                        panic!();
+                    },
+                    _ => {panic!();}
+                },
+
+                _ => {panic!();}
+            }
+        }
+    };
     log!("Logging in with", user_id.to_string());
-    client
+    match client
         .login_username(user_id, &password)
         .initial_device_display_name("somix")
         .send()
-        .await
-        .unwrap();
+        .await {
+        Ok(_) => {}
+        Err(e) => {
+            error_alert(e.into());
+        }
+    }
     log!("Successfully logged in!");
     log!("syncing...");
 
@@ -213,9 +233,14 @@ pub async fn react_to_event(
     room_id: String,
     event_id: String,
     reaction: String,
-) -> Result<String, MatrixSocialError> {
+) -> Result<String, SomixError> {
     let client = get_client().await?;
-    client.sync_once(get_sync_settings()).await.unwrap();
+    match client.sync_once(get_sync_settings()).await {
+        Ok(_) => {}
+        Err(e) => {
+            error_alert(e.into());
+        }
+    }
     let room_id = RoomId::parse(room_id).unwrap();
     let room = client.get_joined_room(&room_id).unwrap();
     let posts: Vec<Post> = LocalStorage::get("somix:posts")?;
@@ -234,7 +259,7 @@ pub async fn react_to_event(
     Ok(String::from(""))
 }
 
-pub async fn send_message(room_id: String, body: String) -> Result<String, MatrixSocialError> {
+pub async fn send_message(room_id: String, body: String) -> Result<String, SomixError> {
     let client = get_client().await?;
     client.sync_once(get_sync_settings()).await.unwrap();
     let room_id = RoomId::parse(room_id).unwrap();
@@ -244,7 +269,7 @@ pub async fn send_message(room_id: String, body: String) -> Result<String, Matri
     Ok(resp.event_id.to_string())
 }
 
-pub async fn reply_to_message(post: Post, body: String) -> Result<String, MatrixSocialError> {
+pub async fn reply_to_message(post: Post, body: String) -> Result<String, SomixError> {
     let client = get_client().await?;
     client.sync_once(get_sync_settings()).await?;
     let room_id = RoomId::parse(post.room_id.clone()).unwrap();
