@@ -2,13 +2,13 @@ use std::ops::Deref;
 
 use gloo_console::log;
 use gloo_storage::{LocalStorage, Storage};
-use ruma::{events::{reaction::ReactionEventContent, relation::RelationType, MessageLikeEvent}, EventId, RoomId};
+use ruma::{EventId, events::{MessageLikeEvent, reaction::ReactionEventContent, relation::RelationType}, RoomId};
 use yew::prelude::*;
 use yew_router::prelude::*;
 
 use crate::{
-    client::{get_client, get_posts, react_to_event, redact_event, Post},
-    SomixError, Route,
+    client::{get_client, get_posts, Post, react_to_event, redact_event},
+    Route, SomixError,
 };
 use crate::client::get_post_info;
 
@@ -79,7 +79,7 @@ pub fn post(props: &Props) -> Html {
                     event_id_state.deref().to_string(),
                     reaction,
                 )
-                .await
+                    .await
                 {
                     Ok(_) => {}
                     Err(e) => match e {
@@ -91,7 +91,7 @@ pub fn post(props: &Props) -> Html {
                                     let room_id = RoomId::parse(post.room_id.clone()).unwrap();
                                     let event_id = EventId::parse(post.event_id.clone()).unwrap();
                                     let request = ruma::api::client::relations::get_relating_events_with_rel_type::v1::Request::new(
-                                            &room_id, &event_id, RelationType::Annotation);
+                                        &room_id, &event_id, RelationType::Annotation);
                                     let resp = client.send(request, None).await.unwrap();
                                     for event in resp.chunk.iter() {
                                         let event: MessageLikeEvent<ReactionEventContent> =
@@ -104,13 +104,13 @@ pub fn post(props: &Props) -> Html {
                                                     if event.content.relates_to.key
                                                         == "👍️".to_string()
                                                         || event.content.relates_to.key
-                                                            == "👎️".to_string()
+                                                        == "👎️".to_string()
                                                     {
                                                         redact_event(
                                                             event.room_id.to_string(),
                                                             event.event_id.to_string(),
                                                         )
-                                                        .await;
+                                                            .await;
                                                     }
                                                 }
                                             }

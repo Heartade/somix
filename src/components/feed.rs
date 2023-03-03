@@ -1,12 +1,12 @@
-use crate::components::post::PostComp;
+use gloo_storage::{LocalStorage, Storage};
+use yew::prelude::*;
+use yew_router::prelude::*;
+
 use crate::{
     client::{get_posts, Post},
     Route,
 };
-
-use gloo_storage::{LocalStorage, Storage};
-use yew::prelude::*;
-use yew_router::prelude::*;
+use crate::components::post::PostComp;
 
 #[function_component(Feed)]
 pub fn feed() -> Html {

@@ -6,7 +6,7 @@ use yew::prelude::*;
 use yew_router::prelude::*;
 
 use crate::{
-    client::{get_posts, reply_to_message, send_message, Post},
+    client::{get_posts, Post, reply_to_message, send_message},
     Route,
 };
 

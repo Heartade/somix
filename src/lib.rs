@@ -1,14 +1,14 @@
-mod client;
-mod components;
-
 use std::collections::VecDeque;
 
-use crate::components::{event::Event, feed::Feed, login::Login, nav::Nav, new::New, room::Room};
-use components::alias::Alias;
 use gloo_console::log;
 use gloo_storage::errors::StorageError;
 use yew::prelude::*;
 use yew_router::prelude::*;
+
+use components::{alias::Alias, event::Event, feed::Feed, login::Login, nav::Nav, new::New, room::Room};
+
+mod client;
+mod components;
 
 #[derive(Clone, Routable, PartialEq)]
 pub enum Route {
@@ -81,7 +81,7 @@ pub enum SomixError {
     Storage(StorageError),
     MatrixSDK(matrix_sdk::Error),
     IdParse(ruma::IdParseError),
-    Reqwest(matrix_sdk::reqwest::Error)
+    Reqwest(matrix_sdk::reqwest::Error),
 }
 
 impl From<StorageError> for SomixError {
@@ -104,17 +104,17 @@ impl From<matrix_sdk::reqwest::Error> for SomixError {
     fn from(e: matrix_sdk::reqwest::Error) -> Self { SomixError::Reqwest(e) }
 }
 
-pub fn error_alert(e: SomixError ) {
+pub fn error_alert(e: SomixError) {
     let mut message = format!("{e:?}");
     match e {
         SomixError::Storage(_) => {}
         SomixError::MatrixSDK(_) => {}
         SomixError::IdParse(e) => {
             message = format!("The user id should be in the form of @username:example.org \n{message}");
-        },
+        }
         SomixError::Reqwest(e) => {
             message = format!("Unable to connect to homeserver \n{message}");
-        },
+        }
     }
     message = format!("An error has occurred:\n{message}");
     log!(&message);

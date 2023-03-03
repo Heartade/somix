@@ -1,27 +1,26 @@
 use gloo_console::log;
-use matrix_sdk::{config::SyncSettings, room::MessagesOptions, ruma::{
+use gloo_storage::{errors::StorageError, LocalStorage, Storage};
+use matrix_sdk::{Client, ClientBuildError, config::SyncSettings, HttpError, room::MessagesOptions, ruma::{
     events::{
-        room::message::{sanitize::HtmlSanitizerMode, Relation, RoomMessageEventContent},
-        AnyMessageLikeEvent, AnyTimelineEvent,
+        AnyMessageLikeEvent,
+        AnyTimelineEvent, room::message::{Relation, RoomMessageEventContent, sanitize::HtmlSanitizerMode},
     },
     UserId,
-}, Client, Session, ClientBuildError, HttpError};
+}, Session};
 use ruma::{api::client::{
     filter::{FilterDefinition, LazyLoadOptions, RoomEventFilter, RoomFilter},
     sync::sync_events::v3::Filter,
-}, events::{
-    reaction::ReactionEventContent,
-    room::message::{sanitize::RemoveReplyFallback, ForwardThread, TextMessageEventContent},
+}, EventId, events::{
     OriginalMessageLikeEvent,
-}, EventId, OwnedEventId, RoomId, UInt, OwnedRoomId, OwnedUserId};
+    reaction::ReactionEventContent,
+    room::message::{ForwardThread, sanitize::RemoveReplyFallback, TextMessageEventContent},
+}, OwnedEventId, OwnedRoomId, OwnedUserId, RoomId, UInt};
+use ruma::api::client::relations::get_relating_events;
+use ruma::events::reaction::ReactionEvent;
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 
-use gloo_storage::{errors::StorageError, LocalStorage, Storage};
-use ruma::api::client::relations::get_relating_events;
-use ruma::events::reaction::ReactionEvent;
-
-use crate::{round_robin_vec_merge, SomixError, error_alert};
+use crate::{error_alert, round_robin_vec_merge, SomixError};
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq)]
 pub struct Post {
@@ -71,11 +70,11 @@ pub async fn login(user_id: String, password: String) -> Result<String, String> 
                     HttpError::Reqwest(e) => {
                         error_alert(e.into());
                         panic!();
-                    },
-                    _ => {panic!();}
+                    }
+                    _ => { panic!(); }
                 },
 
-                _ => {panic!();}
+                _ => { panic!(); }
             }
         }
     };
@@ -349,10 +348,10 @@ pub async fn get_post_info(event_id: OwnedEventId, room_id: OwnedRoomId) -> Resu
                         } else if event.content.relates_to.key.clone() == "👎️".to_string() {
                             score += -1;
                         } else {}
-                    },
+                    }
                     _ => {}
                 }
-            },
+            }
             _ => {}
         }
     }

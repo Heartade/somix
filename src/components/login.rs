@@ -3,9 +3,8 @@ use std::ops::Deref;
 use yew::prelude::*;
 use yew_router::prelude::*;
 
-use crate::components::text_input::TextInput;
-
 use crate::{client, Route};
+use crate::components::text_input::TextInput;
 
 #[function_component(Login)]
 pub fn login() -> Html {
@@ -42,8 +41,8 @@ pub fn login() -> Html {
                     user_id_state.deref().to_string(),
                     password_state.deref().to_string(),
                 )
-                .await
-                .unwrap();
+                    .await
+                    .unwrap();
                 client::get_posts().await.unwrap();
                 navigator.push(&Route::Home);
             });
