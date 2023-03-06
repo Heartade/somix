@@ -31,19 +31,10 @@ pub struct Post {
     pub event_id: String,
     pub reply_to: Option<String>,
     pub reply_ids: Vec<String>,
-    pub score: i32,
     pub source: OriginalMessageLikeEvent<RoomMessageEventContent>,
 }
 
 impl Post {
-    fn increment_score(&mut self) {
-        self.score = self.score + 1;
-    }
-
-    fn decrement_score(&mut self) {
-        self.score = self.score - 1;
-    }
-
     fn add_reply_id(&mut self, event_id: String) {
         self.reply_ids.push(event_id);
     }
@@ -176,24 +167,8 @@ pub async fn get_posts() -> Result<Vec<Post>, StorageError> {
                                 event_id: event.event_id.to_string(),
                                 reply_to,
                                 reply_ids: vec![],
-                                score: 0,
                                 source: event,
                             });
-                        }
-                        ruma::events::MessageLikeEvent::Redacted(_) => {}
-                    },
-                    AnyMessageLikeEvent::Reaction(event) => match event {
-                        ruma::events::MessageLikeEvent::Original(event) => {
-                            let reaction = event.content.relates_to.key;
-                            for post in &mut room_posts {
-                                if post.event_id == event.content.relates_to.event_id {
-                                    if reaction == "👍️".to_string() {
-                                        post.increment_score();
-                                    } else if reaction == "👎️".to_string() {
-                                        post.decrement_score();
-                                    }
-                                }
-                            }
                         }
                         ruma::events::MessageLikeEvent::Redacted(_) => {}
                     },
