@@ -17,6 +17,7 @@ use ruma::{api::client::{
 }, OwnedEventId, OwnedRoomId, OwnedUserId, RoomId, UInt};
 use ruma::api::client::relations::get_relating_events;
 use ruma::events::reaction::ReactionEvent;
+use ruma::events::room::message::RoomMessageEvent;
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 
@@ -24,10 +25,10 @@ use crate::{error_alert, round_robin_vec_merge, SomixError};
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq)]
 pub struct Post {
-    pub sender_id: String,
+//    pub sender_id: String,
     pub room_name: String,
     pub room_id: String,
-    pub content: String,
+//    pub content: String,
     pub event_id: String,
     pub reply_to: Option<String>,
     pub reply_ids: Vec<String>,
@@ -160,10 +161,10 @@ pub async fn get_posts() -> Result<Vec<Post>, StorageError> {
                                 None => (None, content),
                             };
                             room_posts.push(Post {
-                                sender_id: sender_name,
+                                //sender_id: sender_name,
                                 room_name: room_name.clone(),
                                 room_id: room_id.clone(),
-                                content,
+                                //content,
                                 event_id: event.event_id.to_string(),
                                 reply_to,
                                 reply_ids: vec![],
@@ -307,11 +308,45 @@ pub async fn get_room_info(room_id: String) -> (String, String, String) {
     (room_name, room_desc, room_avatar_url)
 }
 
-pub async fn get_post_info(event_id: OwnedEventId, room_id: OwnedRoomId) -> Result<String, String> {
+#[derive(Debug, Clone)]
+pub struct PostInfo {
+    pub sender: OwnedUserId,
+    pub body: String,
+    pub score: i32
+}
+
+pub async fn get_post_info(event_id: OwnedEventId, room_id: OwnedRoomId) -> Result<PostInfo, SomixError> {
     let client = get_client().await.unwrap();
+
+    let sender: Option<OwnedUserId>;
+    let mut body: Option<String> = None;
+    let mut score: Option<i32> = None;
+
+    let req = ruma::api::client::context::get_context::v3::Request::new(&room_id, &event_id);
+    let resp = client.send(req, None).await.unwrap();
+
+    let event = resp.event.unwrap().deserialize().unwrap();
+    sender = Some(event.sender().to_owned());
+    match event {
+        AnyTimelineEvent::MessageLike(event) => {
+            match event {
+                AnyMessageLikeEvent::RoomMessage(event) => {
+                    match event {
+                        RoomMessageEvent::Original(event) => {
+                            body = Some(event.content.body().to_string());
+                        }
+                        RoomMessageEvent::Redacted(_) => {}
+                    }
+                }
+                _ => {}
+            }
+        }
+        AnyTimelineEvent::State(_) => {}
+    }
+
     let req = get_relating_events::v1::Request::new(&room_id, &event_id);
     let resp = client.send(req, None).await.unwrap();
-    let mut score = 0;
+
     for event in resp.chunk {
         let event = event.deserialize().unwrap();
         match event {
@@ -319,9 +354,9 @@ pub async fn get_post_info(event_id: OwnedEventId, room_id: OwnedRoomId) -> Resu
                 match event {
                     ReactionEvent::Original(event) => {
                         if event.content.relates_to.key.clone() == "👍️".to_string() {
-                            score += 1;
+                            score = Some(score.unwrap_or_default() + 1);
                         } else if event.content.relates_to.key.clone() == "👎️".to_string() {
-                            score += -1;
+                            score = Some(score.unwrap_or_default() - 1);
                         } else {}
                     }
                     _ => {}
@@ -330,5 +365,9 @@ pub async fn get_post_info(event_id: OwnedEventId, room_id: OwnedRoomId) -> Resu
             _ => {}
         }
     }
-    Ok(score.to_string())
+    Ok(PostInfo {
+        sender: sender.unwrap(),
+        body: body.unwrap_or_default(),
+        score: score.unwrap_or_default(),
+    })
 }

@@ -2,15 +2,15 @@ use std::ops::Deref;
 
 use gloo_console::log;
 use gloo_storage::{LocalStorage, Storage};
-use ruma::{EventId, events::{MessageLikeEvent, reaction::ReactionEventContent, relation::RelationType}, RoomId};
+use ruma::{EventId, events::{MessageLikeEvent, reaction::ReactionEventContent, relation::RelationType}, OwnedEventId, RoomId};
 use yew::prelude::*;
 use yew_router::prelude::*;
 
 use crate::{
-    client::{get_client, get_posts, Post, react_to_event, redact_event},
+    client::{get_client, Post, react_to_event, redact_event},
     Route, SomixError,
 };
-use crate::client::get_post_info;
+use crate::client::{get_post_info, PostInfo};
 
 #[derive(Properties, PartialEq)]
 pub struct Props {
@@ -29,6 +29,34 @@ pub fn post(props: &Props) -> Html {
         }
     }
     let post = post.unwrap();
+
+    let post_info: UseStateHandle<Option<PostInfo>> = use_state(|| None);
+    let post_info_callback = {
+        let post_info = post_info.clone();
+        let event_id = post.clone().event_id;
+        let room_id = post.clone().room_id;
+        Callback::from(move |post: Post| {
+            let post_info = post_info.clone();
+            let event_id = event_id.clone();
+            let room_id = room_id.clone();
+            wasm_bindgen_futures::spawn_local(async move {
+                let post_info = post_info.clone();
+                let event_id = EventId::parse(event_id.clone()).unwrap();
+                let room_id = RoomId::parse(room_id.clone()).unwrap();
+                post_info.set(Some(get_post_info(event_id, room_id).await.unwrap()));
+            });
+        })
+    };
+
+        {
+            let post_info_callback = post_info_callback.clone();
+            let post = post.clone();
+            use_effect_with_deps(
+                move |_| {
+                    post_info_callback.emit(post.clone());
+                }, ()
+            );
+        }
 
     let room_id_state = use_state(|| post.room_id.clone());
     let event_id_state = use_state(|| post.event_id.clone());
@@ -67,12 +95,15 @@ pub fn post(props: &Props) -> Html {
         let event_id_state = event_id_state.clone();
         let post = post.clone();
         let score_state = score_state.clone();
+        let post_info = post_info.clone();
         Callback::from(move |reaction: String| {
             let post = post.clone();
             let room_id_state = room_id_state.clone();
             let event_id_state = event_id_state.clone();
             let score_state = score_state.clone();
-            score_state.set("loading".to_string());
+            let post_info = post_info.clone();
+            //score_state.set("loading".to_string());
+            post_info.set(None);
             wasm_bindgen_futures::spawn_local(async move {
                 match react_to_event(
                     room_id_state.deref().to_string(),
@@ -128,7 +159,8 @@ pub fn post(props: &Props) -> Html {
                 }
                 let event_id = EventId::parse(event_id_state.deref().clone()).unwrap();
                 let room_id = RoomId::parse(room_id_state.deref().clone()).unwrap();
-                score_state.set(get_post_info(event_id, room_id).await.unwrap());
+                //score_state.set(get_post_info(event_id, room_id).await.unwrap().score.to_string());
+                post_info.set(Some(get_post_info(event_id, room_id).await.unwrap()));
             });
         })
     };
@@ -157,14 +189,14 @@ pub fn post(props: &Props) -> Html {
                     </svg>
                 </button> //thumbs up
                 {
-                    match score_state.deref().clone().as_str() {
-                        "loading" => html! {
+                    match post_info.deref().clone() {
+                        None => html! {
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="animate-spin w-8 h-8 stroke-tuatara-400 justify-self-center">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" />
                             </svg>
                         },
-                        _ => html! {
-                            <span class="text-center text-tuatara-400">{score_state.deref().clone()}</span>
+                        Some(post_info) => html! {
+                            <span class="text-center text-tuatara-400">{post_info.score.to_string()}</span>
                         }
                     }
                 }
@@ -181,10 +213,32 @@ pub fn post(props: &Props) -> Html {
                         <img src="assets/logo_128x128.webp" class="h-6 w-6 rounded-full" /> //room image
                         <span class="group-hover:text-charm-300 group-hover:underline">{ post.room_name.clone() }</span> //room name
                     </Link<Route>>
-                    <span>{"Sent by "}{ post.sender_id.clone() }</span>
+                    {
+                        match post_info.deref().clone() {
+                            None => html! {
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="animate-spin w-8 h-8 stroke-charm-300 justify-self-center">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" />
+                                </svg>
+                            },
+                            Some(post_info) => html! {
+                                <span>{"Sent by"}{post_info.sender.to_string()}</span>
+                            }
+                        }
+                    }
                 </div>
                 <Link<Route> to={Route::Event { event_id: post.event_id.clone() }} classes={classes!(String::from("py-4 hover:text-charm-300"))}>
-                    <span class="text-3xl font-bold">{ post.content.clone() }</span>
+                    {
+                        match post_info.deref().clone() {
+                            None => html! {
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="animate-spin w-8 h-8 stroke-charm-300 justify-self-center">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" />
+                                </svg>
+                            },
+                            Some(post_info) => html! {
+                                <span class="text-3xl font-bold">{post_info.body}</span>
+                            }
+                        }
+                    }
                 </Link<Route>>
                 <div class="flex gap-2"> //bottom
                     <Link<Route> to={Route::Event { event_id: post.event_id.clone() }} classes={classes!(String::from(

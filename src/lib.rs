@@ -109,10 +109,10 @@ pub fn error_alert(e: SomixError) {
     match e {
         SomixError::Storage(_) => {}
         SomixError::MatrixSDK(_) => {}
-        SomixError::IdParse(e) => {
+        SomixError::IdParse(_) => {
             message = format!("The user id should be in the form of @username:example.org \n{message}");
         }
-        SomixError::Reqwest(e) => {
+        SomixError::Reqwest(_) => {
             message = format!("Unable to connect to homeserver \n{message}");
         }
     }
