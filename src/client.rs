@@ -137,34 +137,23 @@ pub async fn get_posts() -> Result<Vec<Post>, StorageError> {
                     continue;
                 }
             };
-            let sender_name = event.sender().to_string();
             match event {
                 AnyTimelineEvent::MessageLike(event) => match event {
                     AnyMessageLikeEvent::RoomMessage(event) => match event {
                         ruma::events::MessageLikeEvent::Original(event) => {
-                            let content = event.content.body().to_string();
-                            let (reply_to, content) = match event.clone().content.relates_to {
+                            let reply_to = match event.clone().content.relates_to {
                                 Some(relation) => match relation {
                                     Relation::Reply { in_reply_to } => {
-                                        let mut event = event.clone();
-                                        event.content.sanitize(
-                                            HtmlSanitizerMode::Strict,
-                                            RemoveReplyFallback::Yes,
-                                        );
-                                        (
-                                            Some(in_reply_to.event_id.to_string()),
-                                            event.content.body().to_string(),
-                                        )
+                                        Some(in_reply_to.event_id.to_string())
+
                                     }
-                                    _ => (None, content),
+                                    _ => None,
                                 },
-                                None => (None, content),
+                                None => None,
                             };
                             room_posts.push(Post {
-                                //sender_id: sender_name,
                                 room_name: room_name.clone(),
                                 room_id: room_id.clone(),
-                                //content,
                                 event_id: event.event_id.to_string(),
                                 reply_to,
                                 reply_ids: vec![],
@@ -332,7 +321,11 @@ pub async fn get_post_info(event_id: OwnedEventId, room_id: OwnedRoomId) -> Resu
             match event {
                 AnyMessageLikeEvent::RoomMessage(event) => {
                     match event {
-                        RoomMessageEvent::Original(event) => {
+                        RoomMessageEvent::Original(mut event) => {
+                            event.content.sanitize(
+                                HtmlSanitizerMode::Strict,
+                                RemoveReplyFallback::Yes,
+                            );
                             body = Some(event.content.body().to_string());
                         }
                         RoomMessageEvent::Redacted(_) => {}

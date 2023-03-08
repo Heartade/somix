@@ -2,7 +2,7 @@ use std::ops::Deref;
 
 use gloo_console::log;
 use gloo_storage::{LocalStorage, Storage};
-use ruma::{EventId, events::{MessageLikeEvent, reaction::ReactionEventContent, relation::RelationType}, OwnedEventId, RoomId};
+use ruma::{EventId, events::{MessageLikeEvent, reaction::ReactionEventContent, relation::RelationType}, RoomId};
 use yew::prelude::*;
 use yew_router::prelude::*;
 
@@ -35,7 +35,7 @@ pub fn post(props: &Props) -> Html {
         let post_info = post_info.clone();
         let event_id = post.clone().event_id;
         let room_id = post.clone().room_id;
-        Callback::from(move |post: Post| {
+        Callback::from(move |_| {
             let post_info = post_info.clone();
             let event_id = event_id.clone();
             let room_id = room_id.clone();
@@ -53,7 +53,7 @@ pub fn post(props: &Props) -> Html {
             let post = post.clone();
             use_effect_with_deps(
                 move |_| {
-                    post_info_callback.emit(post.clone());
+                    post_info_callback.emit(());
                 }, ()
             );
         }
@@ -74,7 +74,7 @@ pub fn post(props: &Props) -> Html {
                 let score_state = score_state.clone();
                 let event_id = EventId::parse(event_id_state.deref().clone()).unwrap();
                 let room_id = RoomId::parse(room_id_state.deref().clone()).unwrap();
-                let score = get_post_info(event_id, room_id).await.unwrap();
+                let score = get_post_info(event_id, room_id).await.unwrap().score.to_string();
                 score_state.set(score);
             });
         })
@@ -94,13 +94,11 @@ pub fn post(props: &Props) -> Html {
         let room_id_state = room_id_state.clone();
         let event_id_state = event_id_state.clone();
         let post = post.clone();
-        let score_state = score_state.clone();
         let post_info = post_info.clone();
         Callback::from(move |reaction: String| {
             let post = post.clone();
             let room_id_state = room_id_state.clone();
             let event_id_state = event_id_state.clone();
-            let score_state = score_state.clone();
             let post_info = post_info.clone();
             //score_state.set("loading".to_string());
             post_info.set(None);
