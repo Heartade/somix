@@ -1,0 +1,312 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="48"
+   height="48"
+   viewBox="0 0 48 48"
+   version="1.1"
+   id="SVGRoot"
+   sodipodi:docname="original.svg"
+   inkscape:version="1.1.2 (b8e25be833, 2022-02-05)"
+   inkscape:export-filename="../Projects/somix/assets/somix_v3.webp"
+   inkscape:export-xdpi="1536"
+   inkscape:export-ydpi="1536"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview1790"
+     pagecolor="#ffffff"
+     bordercolor="#111111"
+     borderopacity="1"
+     inkscape:showpageshadow="0"
+     inkscape:pageopacity="0"
+     inkscape:pagecheckerboard="1"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:document-units="px"
+     showgrid="true"
+     inkscape:zoom="11.313708"
+     inkscape:cx="9.2365823"
+     inkscape:cy="101.60241"
+     inkscape:window-width="2082"
+     inkscape:window-height="981"
+     inkscape:window-x="1740"
+     inkscape:window-y="859"
+     inkscape:window-maximized="0"
+     inkscape:current-layer="layer2"
+     inkscape:pageshadow="2"
+     inkscape:snap-grids="true">
+    <inkscape:grid
+       type="xygrid"
+       id="grid1796"
+       visible="false"
+       spacingx="0.25"
+       spacingy="0.25"
+       empspacing="4"
+       enabled="false" />
+    <inkscape:grid
+       type="xygrid"
+       id="grid37377"
+       spacingx="5"
+       spacingy="5"
+       color="#ff3f3f"
+       opacity="0.32156863"
+       empspacing="1"
+       empcolor="#ff3f3f"
+       empopacity="0.50196078"
+       visible="false"
+       enabled="false" />
+  </sodipodi:namedview>
+  <defs
+     id="defs1785">
+    <linearGradient
+       id="linearGradient5385"
+       inkscape:swatch="solid">
+      <stop
+         style="stop-color:#00bca0;stop-opacity:1;"
+         offset="0"
+         id="stop5383" />
+    </linearGradient>
+  </defs>
+  <g
+     inkscape:label="BG"
+     inkscape:groupmode="layer"
+     id="layer1"
+     sodipodi:insensitive="true"
+     style="display:none">
+    <rect
+       style="opacity:1;fill:#00bc82;fill-opacity:1;stroke:none;stroke-width:9.14286;stroke-opacity:0.7;paint-order:markers fill stroke"
+       id="rect1775"
+       width="48"
+       height="48"
+       x="0"
+       y="0"
+       rx="6"
+       ry="6"
+       inkscape:export-filename="C:\Users\sooba\rect1775.png"
+       inkscape:export-xdpi="1536"
+       inkscape:export-ydpi="1536" />
+  </g>
+  <g
+     inkscape:groupmode="layer"
+     id="layer2"
+     inkscape:label="FG">
+    <rect
+       style="fill:#333333;fill-opacity:1;stroke:none;stroke-width:7.83836;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;paint-order:markers fill stroke"
+       id="rect10742"
+       width="64"
+       height="24"
+       x="26"
+       y="0" />
+    <path
+       style="fill:#00cc8d;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="m 33,4 h -3 v 16 h 3 V 19 H 31 V 5 h 2 z"
+       id="path10744" />
+    <path
+       style="fill:#00cc8d;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="m 83,4 v 1 h 2 v 14 h -2 v 1 h 3 V 4 Z"
+       id="path10746" />
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:16px;line-height:1.25;font-family:Pretendard;-inkscape-font-specification:'Pretendard Bold';fill:#00cc8d;fill-opacity:1;stroke:none"
+       x="35.390625"
+       y="16.958984"
+       id="text10750"><tspan
+         sodipodi:role="line"
+         id="tspan10748"
+         x="35.390625"
+         y="16.958984"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:16px;font-family:Pretendard;-inkscape-font-specification:'Pretendard Bold';fill:#00cc8d;fill-opacity:1;stroke:none">somix</tspan></text>
+    <g
+       aria-label="s"
+       id="text3826-5"
+       style="font-weight:600;font-size:34.6667px;line-height:1.25;font-family:Pretendard;-inkscape-font-specification:'Pretendard Semi-Bold';fill:#ffffff"
+       transform="translate(-21.657709,-15.675133)" />
+    <rect
+       style="fill:#333333;fill-opacity:1;stroke:none;stroke-width:8.0796;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;paint-order:markers fill stroke"
+       id="rect16283"
+       width="24"
+       height="24"
+       x="0"
+       y="0" />
+    <path
+       style="fill:#00cc8d;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="M 5,4 H 2 V 20 H 5 V 19 H 3 V 5 h 2 z"
+       id="path16285" />
+    <path
+       style="fill:#00cc8d;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="m 19,4 v 1 h 2 v 14 h -2 v 1 h 3 V 4 Z"
+       id="path16287" />
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:16px;line-height:1.25;font-family:Pretendard;-inkscape-font-specification:'Pretendard Bold';fill:#00cc8d;fill-opacity:1;stroke:none;word-spacing:0px"
+       x="7.6875"
+       y="16.819534"
+       id="text10750-3"><tspan
+         sodipodi:role="line"
+         id="tspan10748-1"
+         x="7.6875"
+         y="16.819534"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:16px;font-family:Pretendard;-inkscape-font-specification:'Pretendard Bold';fill:#00cc8d;fill-opacity:1;stroke:none">s</tspan></text>
+    <rect
+       style="fill:#00ad78;fill-opacity:1;stroke:none;stroke-width:5.3864;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;paint-order:markers fill stroke"
+       id="rect46540"
+       width="16"
+       height="16"
+       x="0"
+       y="78" />
+    <path
+       style="fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="M 5,80 H 2 V 92 H 5 V 91 H 3 V 81 h 2 z"
+       id="path16285-3"
+       sodipodi:nodetypes="ccccccccc" />
+    <path
+       style="fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="m 11,80 v 1 h 2 v 10 h -2 v 1 h 3 V 80 Z"
+       id="path16287-9"
+       sodipodi:nodetypes="ccccccccc" />
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:12px;line-height:1.25;font-family:Pretendard;-inkscape-font-specification:'Pretendard Bold';word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none"
+       x="4.765625"
+       y="89.15831"
+       id="text10750-3-4"><tspan
+         sodipodi:role="line"
+         id="tspan10748-1-6"
+         x="4.765625"
+         y="89.15831"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:12px;font-family:Pretendard;-inkscape-font-specification:'Pretendard Bold';fill:#ffffff;fill-opacity:1;stroke:none">s</tspan></text>
+    <rect
+       style="fill:#00ad78;fill-opacity:1;stroke:none;stroke-width:10.7728;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;paint-order:markers fill stroke"
+       id="rect52858"
+       width="32"
+       height="32"
+       x="18"
+       y="78" />
+    <path
+       style="fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="m 27,86 h -3 v 16 h 3 v -1 H 25 V 87 h 2 z"
+       id="path16285-4" />
+    <path
+       style="fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="m 41,86 v 1 h 2 v 14 h -2 v 1 h 3 V 86 Z"
+       id="path16287-4" />
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:16px;line-height:1.25;font-family:Pretendard;-inkscape-font-specification:'Pretendard Bold';word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none"
+       x="29.6875"
+       y="98.819534"
+       id="text10750-3-1"><tspan
+         sodipodi:role="line"
+         id="tspan10748-1-5"
+         x="29.6875"
+         y="98.819534"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:16px;font-family:Pretendard;-inkscape-font-specification:'Pretendard Bold';fill:#ffffff;fill-opacity:1;stroke:none">s</tspan></text>
+    <rect
+       style="fill:#00ad78;fill-opacity:1;stroke:none;stroke-width:7.83836;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;paint-order:markers fill stroke"
+       id="rect53168"
+       width="64"
+       height="24"
+       x="26"
+       y="26" />
+    <path
+       style="fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="m 33,30 h -3 v 16 h 3 V 45 H 31 V 31 h 2 z"
+       id="path53170" />
+    <path
+       style="fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="m 83,30 v 1 h 2 v 14 h -2 v 1 h 3 V 30 Z"
+       id="path53172" />
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:16px;line-height:1.25;font-family:Pretendard;-inkscape-font-specification:'Pretendard Bold';fill:#ffffff;fill-opacity:1;stroke:none"
+       x="35.390625"
+       y="42.958984"
+       id="text53176"><tspan
+         sodipodi:role="line"
+         id="tspan53174"
+         x="35.390625"
+         y="42.958984"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:16px;font-family:Pretendard;-inkscape-font-specification:'Pretendard Bold';fill:#ffffff;fill-opacity:1;stroke:none">somix</tspan></text>
+    <rect
+       style="fill:#00ad78;fill-opacity:1;stroke:none;stroke-width:8.0796;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;paint-order:markers fill stroke"
+       id="rect53178"
+       width="24"
+       height="24"
+       x="0"
+       y="26" />
+    <path
+       style="fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="M 5,30 H 2 V 46 H 5 V 45 H 3 V 31 h 2 z"
+       id="path53180" />
+    <path
+       style="fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="m 19,30 v 1 h 2 v 14 h -2 v 1 h 3 V 30 Z"
+       id="path53182" />
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:16px;line-height:1.25;font-family:Pretendard;-inkscape-font-specification:'Pretendard Bold';word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none"
+       x="7.6875"
+       y="42.819534"
+       id="text53186"><tspan
+         sodipodi:role="line"
+         id="tspan53184"
+         x="7.6875"
+         y="42.819534"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:16px;font-family:Pretendard;-inkscape-font-specification:'Pretendard Bold';fill:#ffffff;fill-opacity:1;stroke:none">s</tspan></text>
+    <rect
+       style="fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:7.83836;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;paint-order:markers fill stroke"
+       id="rect53188"
+       width="64"
+       height="24"
+       x="26"
+       y="52" />
+    <path
+       style="fill:#00ad78;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="m 33,56 h -3 v 16 h 3 V 71 H 31 V 57 h 2 z"
+       id="path53190" />
+    <path
+       style="fill:#00ad78;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="m 83,56 v 1 h 2 v 14 h -2 v 1 h 3 V 56 Z"
+       id="path53192" />
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:16px;line-height:1.25;font-family:Pretendard;-inkscape-font-specification:'Pretendard Bold';fill:#00ad78;fill-opacity:1;stroke:none"
+       x="35.390625"
+       y="68.958984"
+       id="text53196"><tspan
+         sodipodi:role="line"
+         id="tspan53194"
+         x="35.390625"
+         y="68.958984"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:16px;font-family:Pretendard;-inkscape-font-specification:'Pretendard Bold';fill:#00ad78;fill-opacity:1;stroke:none">somix</tspan></text>
+    <rect
+       style="fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:8.0796;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;paint-order:markers fill stroke"
+       id="rect53198"
+       width="24"
+       height="24"
+       x="0"
+       y="52" />
+    <path
+       style="fill:#00ad78;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="M 5,56 H 2 V 72 H 5 V 71 H 3 V 57 h 2 z"
+       id="path53200" />
+    <path
+       style="fill:#00ad78;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="m 19,56 v 1 h 2 v 14 h -2 v 1 h 3 V 56 Z"
+       id="path53202" />
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:16px;line-height:1.25;font-family:Pretendard;-inkscape-font-specification:'Pretendard Bold';word-spacing:0px;fill:#00ad78;fill-opacity:1;stroke:none"
+       x="7.6875"
+       y="68.819534"
+       id="text53206"><tspan
+         sodipodi:role="line"
+         id="tspan53204"
+         x="7.6875"
+         y="68.819534"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:16px;font-family:Pretendard;-inkscape-font-specification:'Pretendard Bold';fill:#00ad78;fill-opacity:1;stroke:none">s</tspan></text>
+  </g>
+</svg>

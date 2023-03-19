@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="16"
+   height="16"
+   viewBox="0 0 16 16"
+   version="1.1"
+   id="SVGRoot"
+   sodipodi:docname="favicon_sm.svg"
+   inkscape:version="1.1.2 (b8e25be833, 2022-02-05)"
+   inkscape:export-filename="C:\Users\sooba\git\personal\somix\assets\logo\favicon_24x24.png"
+   inkscape:export-xdpi="144"
+   inkscape:export-ydpi="144"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview1790"
+     pagecolor="#ffffff"
+     bordercolor="#111111"
+     borderopacity="1"
+     inkscape:showpageshadow="0"
+     inkscape:pageopacity="0"
+     inkscape:pagecheckerboard="1"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:document-units="px"
+     showgrid="true"
+     inkscape:zoom="47.4375"
+     inkscape:cx="8"
+     inkscape:cy="8"
+     inkscape:window-width="2082"
+     inkscape:window-height="981"
+     inkscape:window-x="736"
+     inkscape:window-y="854"
+     inkscape:window-maximized="0"
+     inkscape:current-layer="layer1"
+     inkscape:pageshadow="2"
+     inkscape:snap-grids="true" />
+  <defs
+     id="defs1785">
+    <linearGradient
+       id="linearGradient5385"
+       inkscape:swatch="solid">
+      <stop
+         style="stop-color:#00bca0;stop-opacity:1;"
+         offset="0"
+         id="stop5383" />
+    </linearGradient>
+  </defs>
+  <g
+     inkscape:label="BG"
+     inkscape:groupmode="layer"
+     id="layer1"
+     style="display:inline"
+     sodipodi:insensitive="true">
+    <rect
+       style="fill:#00ad78;fill-opacity:1;stroke:none;stroke-width:5.3864;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;paint-order:markers fill stroke"
+       id="rect46540"
+       width="16"
+       height="16"
+       x="0"
+       y="0" />
+  </g>
+  <g
+     inkscape:groupmode="layer"
+     id="layer2"
+     inkscape:label="FG">
+    <g
+       aria-label="s"
+       id="text3826-5"
+       style="font-weight:600;font-size:34.6667px;line-height:1.25;font-family:Pretendard;-inkscape-font-specification:'Pretendard Semi-Bold';fill:#ffffff"
+       transform="translate(-21.657709,-15.675133)" />
+    <path
+       style="fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="M 5,2 H 2 V 14 H 5 V 13 H 3 V 3 h 2 z"
+       id="path16285-3"
+       sodipodi:nodetypes="ccccccccc" />
+    <path
+       style="fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="m 11,2 v 1 h 2 v 10 h -2 v 1 h 3 V 2 Z"
+       id="path16287-9"
+       sodipodi:nodetypes="ccccccccc" />
+    <path
+       d="M 9.078125,6.68175 Q 9.0195313,6.347765 8.7441406,6.148546 8.46875,5.949328 8.0351563,5.943468 q -0.4218751,0.0059 -0.7031251,0.1875 -0.28125,0.175782 -0.28125,0.462891 0,0.228516 0.1875,0.392578 0.1933594,0.158203 0.6328125,0.246094 l 1.1367188,0.234375 q 0.9316406,0.193359 1.3828125,0.615234 0.451172,0.421875 0.457031,1.107422 0,0.621094 -0.357422,1.095703 -0.351562,0.47461 -0.990234,0.738281 -0.6386719,0.263672 -1.4765625,0.263672 -0.8496094,0 -1.4707031,-0.240234 Q 5.9375,10.80089 5.5800781,10.349718 5.2285156,9.892687 5.1523437,9.271593 h 1.7460938 q 0.058594,0.369141 0.3457031,0.5625 0.2929688,0.19336 0.7792969,0.199219 0.4804688,-0.0059 0.7675781,-0.181641 Q 9.078125,9.670031 9.078125,9.365343 9.078125,9.11925 8.8671875,8.961046 8.65625,8.802843 8.2109375,8.709093 L 7.15625,8.498156 Q 6.2480469,8.316515 5.7851562,7.859484 5.3222656,7.402453 5.328125,6.693468 5.328125,6.089953 5.65625,5.64464 5.984375,5.193468 6.5878906,4.953234 7.1972656,4.713 8.0117188,4.713 q 0.7910156,0 1.3828125,0.240234 0.5917968,0.240234 0.9257817,0.685547 0.339843,0.439453 0.386718,1.042969 z"
+       id="path1873"
+       style="font-weight:bold;font-size:12px;line-height:1.25;font-family:Pretendard;-inkscape-font-specification:'Pretendard Bold';word-spacing:0px;fill:#ffffff" />
+  </g>
+</svg>
