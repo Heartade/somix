@@ -144,10 +144,14 @@ pub async fn get_posts() -> Result<Vec<Post>, StorageError> {
                             let reply_to = match event.clone().content.relates_to {
                                 Some(relation) => match relation {
                                     Relation::Reply { in_reply_to } => {
+                                        log!(event.content.body().to_string());
                                         Some(in_reply_to.event_id.to_string())
-
+                                    },
+                                    Relation::Thread(thread_in_reply_to) => {
+                                        log!(event.content.body().to_string());
+                                        Some(thread_in_reply_to.event_id.to_string())
                                     }
-                                    _ => None,
+                                    _ => None
                                 },
                                 None => None,
                             };
