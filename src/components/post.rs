@@ -54,7 +54,7 @@ pub fn post(props: &Props) -> Html {
             use_effect_with_deps(
                 move |_| {
                     post_info_callback.emit(());
-                }, ()
+                }, post.event_id.clone()
             );
         }
 
