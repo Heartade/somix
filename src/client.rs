@@ -25,10 +25,10 @@ use crate::{error_alert, round_robin_vec_merge, SomixError};
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq)]
 pub struct Post {
-//    pub sender_id: String,
+    //    pub sender_id: String,
     pub room_name: String,
     pub room_id: String,
-//    pub content: String,
+    //    pub content: String,
     pub event_id: String,
     pub reply_to: Option<String>,
     pub reply_ids: Vec<String>,
@@ -146,7 +146,7 @@ pub async fn get_posts() -> Result<Vec<Post>, StorageError> {
                                     Relation::Reply { in_reply_to } => {
                                         log!(event.content.body().to_string());
                                         Some(in_reply_to.event_id.to_string())
-                                    },
+                                    }
                                     Relation::Thread(thread_in_reply_to) => {
                                         log!(event.content.body().to_string());
                                         Some(thread_in_reply_to.event_id.to_string())
@@ -305,7 +305,7 @@ pub async fn get_room_info(room_id: String) -> (String, String, String) {
 pub struct PostInfo {
     pub sender: OwnedUserId,
     pub body: String,
-    pub score: i32
+    pub score: i32,
 }
 
 pub async fn get_post_info(event_id: OwnedEventId, room_id: OwnedRoomId) -> Result<PostInfo, SomixError> {

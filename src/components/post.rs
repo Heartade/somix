@@ -48,15 +48,15 @@ pub fn post(props: &Props) -> Html {
         })
     };
 
-        {
-            let post_info_callback = post_info_callback.clone();
-            let post = post.clone();
-            use_effect_with_deps(
-                move |_| {
-                    post_info_callback.emit(());
-                }, post.event_id.clone()
-            );
-        }
+    {
+        let post_info_callback = post_info_callback.clone();
+        let post = post.clone();
+        use_effect_with_deps(
+            move |_| {
+                post_info_callback.emit(());
+            }, post.event_id.clone(),
+        );
+    }
 
     let room_id_state = use_state(|| post.room_id.clone());
     let event_id_state = use_state(|| post.event_id.clone());
