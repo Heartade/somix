@@ -9,3 +9,4 @@ pub mod post;
 pub mod room;
 pub mod room_selector;
 pub mod text_input;
+pub mod wordmark;
